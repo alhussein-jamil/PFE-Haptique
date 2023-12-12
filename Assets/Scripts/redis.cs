@@ -1,8 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using NRedisStack;
-using NRedisStack.RedisStackCommands;
 using StackExchange.Redis;
 
 public class redis : MonoBehaviour
@@ -12,7 +11,14 @@ public class redis : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost");
+        ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.154.84:6379");
+        ISubscriber subscriber = redis.GetSubscriber();
+
+        subscriber.Subscribe("channel", (channel, message) =>
+        {
+            Debug.Log($"Received message: {message} from channel: {channel}");
+        });
+
         IDatabase db = redis.GetDatabase();
         db.StringSet("foo", "bar");
         foo = db.StringGet("foo");
@@ -21,6 +27,6 @@ public class redis : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        // Your update logic here
     }
 }
