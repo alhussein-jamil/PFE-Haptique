@@ -18,17 +18,17 @@ public class Redis : MonoBehaviour
         // Creating a subscriber
         ISubscriber subscriber = redis.GetSubscriber();
 
+        RedisChannel redis_chanel = new RedisChannel("Robot_Encoders", RedisChannel.PatternMode.Auto);
         // Subscribe to a subject
-        subscriber.Subscribe(new RedisChannel("Robot_Encoders", RedisChannel.PatternMode.Auto), (channel, message) =>
+        subscriber.Subscribe(redis_chanel, (channel, message) =>
         {
             Debug.Log($"Received message from {channel}: {message}");
         });
 
         // Publishing to another subject
         ISubscriber publisher = redis.GetSubscriber();
-        publisher.Publish("Robot_Encoders", "Hello World");
+        publisher.Publish(redis_chanel, "hello");
     }
-
     // Update is called once per frame
     void Update()
     {
