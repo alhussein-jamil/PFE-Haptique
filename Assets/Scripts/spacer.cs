@@ -12,9 +12,6 @@ public class spacer : MonoBehaviour
     void Start()
     {
         local_transform = this.GetComponent<Transform>();
-
-        
-
     }
 
     // Update is called once per frame

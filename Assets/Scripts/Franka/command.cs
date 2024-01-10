@@ -18,33 +18,20 @@ public class command : MonoBehaviour
 
     public RedisChannel robot_channel;  
 
+    public bool subsciption_done = false;
+
     // make a dropdown menu for the different robots
 
     // Start is called before the first frame update
     void Start()
     {
-    
+
         redisConnection = this.GetComponent<RedisConnection>();
 
         articulationChain = this.GetComponentsInChildren<ArticulationBody>();
-    
-        encoderValues = new float[articulationChain.Length];
-        
-        if (robot_dropdown == RobotType.SimRobot)
-            robot_channel = redisConnection.sim_robot_channel;
-        else
-            robot_channel = redisConnection.robot_channel;
 
-        redisConnection.subscriber.Subscribe(robot_channel, (channel, message) =>
-        {
-            // cut the message into an array of strings 
-            string[] message_array = message.ToString().Split(';'); 
-            for(int idx = 0; idx < message_array.Length-1; idx++)
-            {
-                encoderValues[idx] = float.Parse(message_array[idx]);
-            }
-        }
-    );
+        encoderValues = new float[articulationChain.Length];
+
     }
 
     void SetTargets(float[] targets)
@@ -56,11 +43,34 @@ public class command : MonoBehaviour
         }
     }
 
+    void SubscribeToRedis()
+    {
+
+        if (robot_dropdown == RobotType.SimRobot)
+            robot_channel = redisConnection.sim_robot_channel;
+        else
+            robot_channel = redisConnection.robot_channel;
+        redisConnection.subscriber.Subscribe(robot_channel, (channel, message) =>
+        {
+            // cut the message into an array of strings 
+            string[] message_array = message.ToString().Split(';'); 
+            for(int idx = 0; idx < message_array.Length-1; idx++)
+            {
+                encoderValues[idx] = float.Parse(message_array[idx]);
+            }
+        }
+    );
+    }
     // Update is called once per frame
     void Update()
     {
         SetTargets(encoderValues);
-        
+
+        if (!subsciption_done && redisConnection.doneInit)
+        {
+            SubscribeToRedis();
+            subsciption_done = true;
+        }
     }
 }
 

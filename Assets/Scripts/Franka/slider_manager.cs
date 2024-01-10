@@ -16,32 +16,41 @@ namespace Franka
         private string previousMessage;
         private command controller;
 
+        private bool doneInit = false;
         void Start()
         {
             redisConnection = this.GetComponent<RedisConnection>();
             positionSliders = sliderContainer.GetComponentsInChildren<Slider>();
             controller = this.GetComponent<command>();
-            articulationChain = controller.articulationChain;
             encoderValues = new float[positionSliders.Length];
             sliderValues = new float[positionSliders.Length];
             previousMessage = "";
-            
-            // add listeners to sliders value changes 
-            for (int idx = 0; idx < positionSliders.Length; idx++)
+        } 
+
+        void postInit()
+        {
+            articulationChain = controller.articulationChain;
+
+          for (int idx = 0; idx < positionSliders.Length; idx++)
             {
                 ArticulationBody joint = articulationChain[idx+1];
 
                 positionSliders[idx].minValue = joint.xDrive.lowerLimit;
                 positionSliders[idx].maxValue = joint.xDrive.upperLimit;
             }
-        }   
+            doneInit = true;
+        }  
 
         void Update()
         {
+            if (!doneInit && controller.subsciption_done)
+                postInit();
             string message = "";
             // set limits of sliders to the limits of the joints 
             for (int idx = 0; idx < positionSliders.Length; idx++)
             {
+                if (articulationChain == null)
+                    continue;
                 ArticulationBody joint = articulationChain[idx+1];
                 
                 // set joints by publishing the values to redis

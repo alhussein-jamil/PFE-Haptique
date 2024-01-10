@@ -3822,6 +3822,7 @@ MonoBehaviour:
   articulationChain: []
   encoderValues: []
   robot_dropdown: 0
+  subsciption_done: 0
 --- !u!114 &822764114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3834,6 +3835,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83cecb4d76a1cd4f81712ae00538518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doneInit: 0
 --- !u!1001 &838129647
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9133,11 +9135,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3691277992745290367, guid: 8d59e9bb02ded8445b4b0e77c9bd7925, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 822764113}
-    - targetCorrespondingSourceObject: {fileID: 3691277992745290367, guid: 8d59e9bb02ded8445b4b0e77c9bd7925, type: 3}
-      insertIndex: -1
+      insertIndex: 3
       addedObject: {fileID: 822764114}
+    - targetCorrespondingSourceObject: {fileID: 3691277992745290367, guid: 8d59e9bb02ded8445b4b0e77c9bd7925, type: 3}
+      insertIndex: 4
+      addedObject: {fileID: 822764113}
   m_SourcePrefab: {fileID: 100100000, guid: 8d59e9bb02ded8445b4b0e77c9bd7925, type: 3}
 --- !u!1001 &2107976600
 PrefabInstance:

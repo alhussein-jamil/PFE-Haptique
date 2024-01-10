@@ -10,6 +10,7 @@ namespace Franka{
         public ISubscriber publisher;
         public RedisChannel sim_robot_channel;
         public RedisChannel robot_channel;
+        public bool doneInit = false;
 
         // Start is called before the first frame update
         void Start()
@@ -19,6 +20,7 @@ namespace Franka{
             publisher = redis.GetSubscriber();
             robot_channel = new RedisChannel("Robot_Encoders", RedisChannel.PatternMode.Auto);
             sim_robot_channel = new RedisChannel("Sim_Robot_Encoders", RedisChannel.PatternMode.Auto);
+            doneInit = true;
         }
 
     }
