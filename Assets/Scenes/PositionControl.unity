@@ -3821,8 +3821,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   articulationChain: []
   encoderValues: []
-  robot_dropdown: 0
-  subsciption_done: 0
+  robotDropdown: 0
+  subscriptionDone: 0
 --- !u!114 &822764114
 MonoBehaviour:
   m_ObjectHideFlags: 0
