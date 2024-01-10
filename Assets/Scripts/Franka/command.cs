@@ -1,77 +1,63 @@
-using NetTopologySuite.Operation.Buffer;
 using StackExchange.Redis;
-using Unity.Robotics.UrdfImporter;
 using UnityEngine;
-using UnityEngine.UI;
 
-
-namespace Franka{
-public class command : MonoBehaviour
+namespace Franka
 {
-    public enum RobotType {SimRobot, Robot};
-    public ArticulationBody[] articulationChain;
-    public float[] encoderValues;
-    private RedisConnection redisConnection;
-
-    // make a dropdown menu for the different channels
-    public RobotType robot_dropdown;
-
-    public RedisChannel robot_channel;  
-
-    public bool subsciption_done = false;
-
-    // make a dropdown menu for the different robots
-
-    // Start is called before the first frame update
-    void Start()
+    public class Command : MonoBehaviour
     {
+        public enum RobotType { SimRobot, Robot };
+        public ArticulationBody[] articulationChain;
+        public float[] encoderValues;
+        private RedisConnection redisConnection;
 
-        redisConnection = this.GetComponent<RedisConnection>();
+        // Dropdown menu for different channels
+        public RobotType robotDropdown;
+        public RedisChannel robotChannel;
 
-        articulationChain = this.GetComponentsInChildren<ArticulationBody>();
+        public bool subscriptionDone = false;
 
-        encoderValues = new float[articulationChain.Length];
-
-    }
-
-    void SetTargets(float[] targets)
-    {
-        for(int idx = 0; idx < targets.Length; idx++)
+        // Start is called before the first frame update
+        void Start()
         {
-            if (idx +1 < articulationChain.Length)
-                articulationChain[idx+1].SetDriveTarget(axis: ArticulationDriveAxis.X, value: targets[idx]);
+            redisConnection = GetComponent<RedisConnection>();
+            articulationChain = GetComponentsInChildren<ArticulationBody>();
+            encoderValues = new float[articulationChain.Length];
         }
-    }
 
-    void SubscribeToRedis()
-    {
-
-        if (robot_dropdown == RobotType.SimRobot)
-            robot_channel = redisConnection.sim_robot_channel;
-        else
-            robot_channel = redisConnection.robot_channel;
-        redisConnection.subscriber.Subscribe(robot_channel, (channel, message) =>
+        void SetTargets(float[] targets)
         {
-            // cut the message into an array of strings 
-            string[] message_array = message.ToString().Split(';'); 
-            for(int idx = 0; idx < message_array.Length-1; idx++)
+            for (int idx = 0; idx < targets.Length; idx++)
             {
-                encoderValues[idx] = float.Parse(message_array[idx]);
+                if (idx + 1 < articulationChain.Length)
+                    articulationChain[idx + 1].SetDriveTarget(axis: ArticulationDriveAxis.X, value: targets[idx]);
             }
         }
-    );
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        SetTargets(encoderValues);
 
-        if (!subsciption_done && redisConnection.doneInit)
+        void SubscribeToRedis()
         {
-            SubscribeToRedis();
-            subsciption_done = true;
+            robotChannel = (robotDropdown == RobotType.SimRobot) ? redisConnection.simRobotChannel : redisConnection.robotChannel;
+
+            redisConnection.subscriber.Subscribe(robotChannel, (channel, message) =>
+            {
+                // Cut the message into an array of strings 
+                string[] messageArray = message.ToString().Split(';');
+                for (int idx = 0; idx < messageArray.Length - 1; idx++)
+                {
+                    encoderValues[idx] = float.Parse(messageArray[idx]);
+                }
+            });
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            SetTargets(encoderValues);
+
+            if (!subscriptionDone && redisConnection.doneInit)
+            {
+                SubscribeToRedis();
+                subscriptionDone = true;
+            }
         }
     }
-}
-
 }
