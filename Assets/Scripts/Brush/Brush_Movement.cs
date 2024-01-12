@@ -20,7 +20,9 @@ public class Brush_Movement : MonoBehaviour
             timer += Time.deltaTime;
             
             float t = timer / duration_of_wave; //calculate the speed of the movement from startPoint to finishPoint based on the total duration of the movement is seconds 
-           
+
+            
+
             transform.position = Vector3.Lerp(startPoint.position, endPoint.position, t);
         }
 
