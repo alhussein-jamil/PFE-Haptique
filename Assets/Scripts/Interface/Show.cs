@@ -9,9 +9,19 @@ public class InterfaceTransition : MonoBehaviour
 
     public Button Button1;
     public Slider Slider1;
-    public Button Send;
+    public Button Send1;
+    
     private bool PutButton1 = false;
-    private bool Send_result = false;
+    private bool Send1_result = false;
+
+    public Button Button2;
+    public Slider Slider2;
+    public Button Send2;
+
+    private bool PutButton2 = false;
+    private bool Send2_result = false;
+
+    string filePath_result = "Assets/Results/SliderValue.txt";
 
     // method that is played by the button on the Unity scene. It starts the screen transition
     public void StartButton1()
@@ -19,9 +29,19 @@ public class InterfaceTransition : MonoBehaviour
         PutButton1 = true;
     }
 
-    public void StartSendResult()
+    public void StartSend1Result()
     {
-        Send_result = true;
+        Send1_result = true;
+    }
+
+    public void StartButton2()
+    {
+        PutButton2 = true;
+    }
+
+    public void StartSend2Result()
+    {
+        Send2_result = true;
     }
 
 
@@ -33,24 +53,42 @@ public class InterfaceTransition : MonoBehaviour
         {
             Button1.gameObject.SetActive(false);
             Slider1.gameObject.SetActive(true);
-            Send.gameObject.SetActive(true);
+            Send1.gameObject.SetActive(true);
+
         }
 
-        if (Send_result)
+        if (Send1_result)
         {
-            float sliderValue = Slider1.value;
-
-            // Chemin du fichier où enregistrer la valeur
-            string filePath = "Assets/Results/SliderValue.txt";
 
             // Écrire la valeur dans le fichier
-            File.WriteAllText(filePath, sliderValue.ToString());
+            File.AppendAllText(filePath_result, Slider1.value.ToString() + "\n");
             
             Slider1.gameObject.SetActive(false);
-            Send.gameObject.SetActive(false);
+            Send1.gameObject.SetActive(false);
+            Button2.gameObject.SetActive(true);
+
+        }
+
+            if (PutButton2)
+        {
+            Button2.gameObject.SetActive(false);
+            Slider2.gameObject.SetActive(true);
+            Send2.gameObject.SetActive(true);
+           
+        }
+
+        if (Send2_result)
+        {
+
+            // Écrire la valeur dans le fichier
+            File.AppendAllText(filePath_result, Slider2.value.ToString() + "\n");
+            
+            Slider2.gameObject.SetActive(false);
+            Send2.gameObject.SetActive(false);
+        }
         }
 
     }
 
-}
+
 
