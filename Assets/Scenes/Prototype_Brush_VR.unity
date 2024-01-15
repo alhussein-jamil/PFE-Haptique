@@ -462,6 +462,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 638052849732152285, guid: 8ed263e5e96474c4a9967154726e6151, type: 3}
+      propertyPath: m_Name
+      value: XR Origin Seated(XR Rig)
+      objectReference: {fileID: 0}
     - target: {fileID: 4619982464273017653, guid: 8ed263e5e96474c4a9967154726e6151, type: 3}
       propertyPath: m_Name
       value: VRSeatedRemy
