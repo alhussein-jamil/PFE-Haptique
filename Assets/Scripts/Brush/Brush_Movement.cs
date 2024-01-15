@@ -6,10 +6,20 @@ public class Brush_Movement : MonoBehaviour
 {
     public Transform startPoint; 
     public Transform endPoint;
-    float duration_of_wave = 3.0f;
+
+    private Vector3 positionInitiale;
+
+    public float duration_of_wave;
+    public float height_of_curve;
 
     private float timer = 0.0f;
     private bool movingForward = false;
+    private bool curvedMovement = false;
+
+    void Start()
+    {
+        positionInitiale = transform.position;
+    }
 
     private void Update()
     {
@@ -20,8 +30,19 @@ public class Brush_Movement : MonoBehaviour
             timer += Time.deltaTime;
             
             float t = timer / duration_of_wave; //calculate the speed of the movement from startPoint to finishPoint based on the total duration of the movement is seconds 
-           
+
+            
+
             transform.position = Vector3.Lerp(startPoint.position, endPoint.position, t);
+        }
+
+        if (curvedMovement)
+        {
+            timer += Time.deltaTime;
+
+            float t = timer / duration_of_wave;
+            float yOffset = height_of_curve *((t - 1) + (t - 1)*(t - 1)) ;
+             transform.position = Vector3.Lerp(startPoint.position, endPoint.position, t) + new Vector3(0, yOffset, 0);
         }
 
         //when the brush is in the correct place turned of the movement and reset the timer 
@@ -29,6 +50,9 @@ public class Brush_Movement : MonoBehaviour
         {
             timer = 0.0f;
             movingForward = false;
+            curvedMovement = false;
+            transform.position = positionInitiale;
+            transform.rotation = Quaternion.Euler(0.0f , -90.0f , 0.0f);
         }
     }
 
@@ -36,6 +60,12 @@ public class Brush_Movement : MonoBehaviour
     public void StartForwardMovement()
     {
         movingForward = true;
+    }
+
+    public void StartCurvedMovement()
+    {
+        transform.rotation = Quaternion.Euler(0.0f, 90.0f, -60.0f);
+        curvedMovement = true;
     }
 
     // the information about the speed of the brush movement is read from the .csv file during the experiment
