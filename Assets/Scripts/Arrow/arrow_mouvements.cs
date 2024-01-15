@@ -10,8 +10,8 @@ public class arrow_movement : MonoBehaviour
     private Vector3 positionInitiale;
 
     float duration_of_wave = 3.0f;
-    float height_of_curve = 0.5f; // Adjust this value to control the height of the parabolic curve
-    float rotationSpeed = 0.13f;
+    float height_of_curve = 0.65f; // Adjust this value to control the height of the parabolic curve
+    float rotationSpeed = 0.25f;
 
     private float timer = 0.0f;
     private bool movingForward = false;

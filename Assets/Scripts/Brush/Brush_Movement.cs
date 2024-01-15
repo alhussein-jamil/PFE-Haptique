@@ -10,7 +10,7 @@ public class Brush_Movement : MonoBehaviour
     private Vector3 positionInitiale;
 
     float duration_of_wave = 3.0f;
-    float height_of_curve = 0.5f;
+    float height_of_curve = 0.7f;
 
     private float timer = 0.0f;
     private bool movingForward = false;
