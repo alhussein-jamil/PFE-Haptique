@@ -7,7 +7,7 @@ public class arrow_movement : MonoBehaviour
     public Transform startPoint;
     public Transform endPoint;
     float duration_of_wave = 3.0f;
-    float height_of_curve = 1.0f; // Adjust this value to control the height of the parabolic curve
+    float height_of_curve = 0.5f; // Adjust this value to control the height of the parabolic curve
 
     private float timer = 0.0f;
     private bool movingForward = false;
