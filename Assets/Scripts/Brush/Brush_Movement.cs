@@ -6,12 +6,20 @@ public class Brush_Movement : MonoBehaviour
 {
     public Transform startPoint; 
     public Transform endPoint;
+
+    private Vector3 positionInitiale;
+
     float duration_of_wave = 3.0f;
     float height_of_curve = 0.5f;
 
     private float timer = 0.0f;
     private bool movingForward = false;
     private bool curvedMovement = false;
+
+    void Start()
+    {
+        positionInitiale = transform.position;
+    }
 
     private void Update()
     {
@@ -43,6 +51,8 @@ public class Brush_Movement : MonoBehaviour
             timer = 0.0f;
             movingForward = false;
             curvedMovement = false;
+            transform.position = positionInitiale;
+            transform.rotation = Quaternion.Euler(0.0f , -90.0f , 0.0f);
         }
     }
 
