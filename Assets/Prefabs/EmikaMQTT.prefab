@@ -2977,8 +2977,8 @@ MonoBehaviour:
   selectedIndex: 0
   control: 0
   stiffness: 100000
-  damping: 100
-  forceLimit: 200
+  damping: 10000
+  forceLimit: 10000
   speed: 5
   torque: 100
   acceleration: 5
@@ -2995,6 +2995,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83cecb4d76a1cd4f81712ae00538518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  connection_string: localhost:6379
   doneInit: 0
 --- !u!114 &4335074976900046954
 MonoBehaviour:

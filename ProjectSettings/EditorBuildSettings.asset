@@ -6,10 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/TestScenes/Environment.unity
+    path: Assets/Scenes/TestScenes/EnvironmentSetupForest.unity
     guid: 1869848518ae1594f83eeeee84b6e191
   - enabled: 1
-    path: Assets/Scenes/TestScenes/VrHands.unity
+    path: Assets/Scenes/TestScenes/TestVrHandsMeta.unity
     guid: c07e8bb5c9276fe44a5e58347754f162
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 75cfe52963119654c991c850ab9e1171, type: 2}
