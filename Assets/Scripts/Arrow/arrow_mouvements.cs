@@ -6,7 +6,7 @@ public class arrow_movement : MonoBehaviour
 {
     public Transform startPoint;
     public Transform endPoint;
-
+    public GameObject Arrow;
     private Vector3 positionInitiale;
 
     public float duration_of_wave ;
@@ -20,6 +20,7 @@ public class arrow_movement : MonoBehaviour
     void Start()
     {
         positionInitiale = transform.position;
+        Arrow.SetActive(false);
     }
 
 
@@ -49,6 +50,8 @@ public class arrow_movement : MonoBehaviour
             timer = 0.0f;
             movingForward = false;
             curvedMovement = false;
+            Arrow.SetActive(false);
+
             transform.position = positionInitiale;
             transform.rotation = Quaternion.Euler(0.0f , -90.0f , 0.0f);
         }
@@ -56,6 +59,7 @@ public class arrow_movement : MonoBehaviour
 
     public void StartForwardMovement()
     {
+        Arrow.SetActive(true);
 
         
         movingForward = true;
@@ -63,6 +67,7 @@ public class arrow_movement : MonoBehaviour
 
     public void StartCurvedMovement()
     {
+        Arrow.SetActive(true);
 
         transform.rotation = Quaternion.Euler(0.0f, -90.0f, -40.0f);
         curvedMovement = true;
