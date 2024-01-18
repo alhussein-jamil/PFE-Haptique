@@ -293,6 +293,10 @@ PrefabInstance:
       propertyPath: m_Convex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4335074976900046954, guid: d7cb9f4f20d39ca42b806bc7861b2c2d, type: 3}
+      propertyPath: robotDropdown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4354642066395548852, guid: d7cb9f4f20d39ca42b806bc7861b2c2d, type: 3}
       propertyPath: m_UseGravity
       value: 1
@@ -323,7 +327,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6026808390133494149, guid: d7cb9f4f20d39ca42b806bc7861b2c2d, type: 3}
       propertyPath: connection_string
-      value: localhost:6379
+      value: 192.168.77.84:6379
       objectReference: {fileID: 0}
     - target: {fileID: 6634819871736186950, guid: d7cb9f4f20d39ca42b806bc7861b2c2d, type: 3}
       propertyPath: m_UseGravity
