@@ -60,7 +60,7 @@ namespace Franka
                 // Set joints by publishing the values to redis
                 message += positionSliders[idx].value.ToString() + ";";
 
-                encoderValues[idx] = joint.jointPosition[0] / (float)Math.PI * 180;
+                encoderValues[idx] = joint.jointPosition[0];
 
                 sliderValues[idx] = positionSliders[idx].value;
             }

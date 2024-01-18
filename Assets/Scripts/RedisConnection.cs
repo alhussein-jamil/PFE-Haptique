@@ -4,7 +4,9 @@ using StackExchange.Redis;
 namespace Franka{
     public class RedisConnection : MonoBehaviour
     {
-        public ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost:6379,abortConnect=false");//"192.168.154.84:6379");
+        public ConnectionMultiplexer redis;
+        
+        public string connection_string = "localhost:6379";
         public IDatabase db; 
         public ISubscriber subscriber ;
         public ISubscriber publisher;
@@ -15,12 +17,22 @@ namespace Franka{
         // Start is called before the first frame update
         void Start()
         {
+            redis = ConnectionMultiplexer.Connect(connection_string +" ,abortConnect=false");
             db = redis.GetDatabase();
             subscriber = redis.GetSubscriber();
             publisher = redis.GetSubscriber();
-            robotChannel = new RedisChannel("Robot_Encoders", RedisChannel.PatternMode.Auto);
+            RedisChannel testChannel = new RedisChannel("test", RedisChannel.PatternMode.Auto);  
+            //publish random message
+            publisher.Publish(testChannel, "Hello World");  
+            //subscribe to test channel
+            subscriber.Subscribe(testChannel, (channel, message) => {  
+                Debug.Log((string)message);
+            });
+
+            robotChannel = new RedisChannel("encoder_positions", RedisChannel.PatternMode.Auto);
             simRobotChannel = new RedisChannel("Sim_Robot_Encoders", RedisChannel.PatternMode.Auto);
             doneInit = true;
+
         }
 
     }
