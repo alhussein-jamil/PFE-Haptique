@@ -1,19 +1,21 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
+using StackExchange.Redis;
 
 namespace Franka
 {
     public class SliderManager : MonoBehaviour
     {
-        public float[] sliderValues;
+
         public GameObject sliderContainer;
         public Slider[] positionSliders;
-        public float[] encoderValues;
-
+        public double[] encoderValues;
+        public float[] sliderValues;
         private ArticulationBody[] articulationChain;
-        private RedisConnection redisConnection;
-        private string previousMessage;
+        public RedisConnection redisConnection;
+
         private Command controller;
 
         private bool doneInit = false;
@@ -23,11 +25,24 @@ namespace Franka
             redisConnection = GetComponent<RedisConnection>();
             positionSliders = sliderContainer.GetComponentsInChildren<Slider>();
             controller = GetComponent<Command>();
-            encoderValues = new float[positionSliders.Length];
+            encoderValues = new double[positionSliders.Length];
             sliderValues = new float[positionSliders.Length];
-            previousMessage = "";
-        }
 
+            InvokeRepeating("Publish", 0f, 0.001f);
+
+        }
+        static List<byte> CoordsToLine(double[] coords)
+        {
+            List<byte> ret = new List<byte>();
+
+            foreach (var coord in coords)
+            {
+                byte[] bytes = BitConverter.GetBytes(coord);
+                ret.AddRange(bytes);
+            }
+
+            return ret;
+        }
         void PostInit()
         {
             articulationChain = controller.articulationChain;
@@ -36,41 +51,34 @@ namespace Franka
             {
                 ArticulationBody joint = articulationChain[idx + 1];
 
-                positionSliders[idx].minValue = joint.xDrive.lowerLimit;
-                positionSliders[idx].maxValue = joint.xDrive.upperLimit;
+                positionSliders[idx].minValue = joint.xDrive.lowerLimit / 180 * (float)Math.PI;
+                positionSliders[idx].maxValue = joint.xDrive.upperLimit / 180 * (float)Math.PI;
             }
+
+            
             doneInit = true;
         }
+        void Publish()
+        {
+            if (!redisConnection.doneInit)
+                return;
 
+            for (int idx = 0; idx < encoderValues.Length; idx++)
+            {
+
+                encoderValues[idx] =positionSliders[idx].value;
+
+            }
+            byte[] bytes = CoordsToLine(encoderValues).ToArray();
+            string message = System.Text.Encoding.Unicode.GetString(bytes);
+            redisConnection.publisher.Publish(redisConnection.simRobotChannel, message);
+        }
         void Update()
         {
             if (!doneInit && controller.subscriptionDone)
                 PostInit();
 
-            string message = "";
 
-            // Set limits of sliders to the limits of the joints 
-            for (int idx = 0; idx < positionSliders.Length; idx++)
-            {
-                if (articulationChain == null)
-                    continue;
-
-                ArticulationBody joint = articulationChain[idx + 1];
-
-                // Set joints by publishing the values to redis
-                message += positionSliders[idx].value.ToString() + ";";
-
-                encoderValues[idx] = joint.jointPosition[0];
-
-                sliderValues[idx] = positionSliders[idx].value;
-            }
-
-            // Publish the values to redis only if they have changed
-            if (message != previousMessage)
-            {
-                redisConnection.publisher.Publish(redisConnection.simRobotChannel, message);
-                previousMessage = message;
-            }
         }
     }
 }

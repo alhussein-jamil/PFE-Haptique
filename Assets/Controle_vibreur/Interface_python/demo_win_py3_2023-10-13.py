@@ -2,7 +2,6 @@ import serial
 import serial.tools.list_ports
 
 import numpy as np
-import struct
 from threading import Thread
 # import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,8 +13,6 @@ import pyqtgraph.dockarea as dockArea
 import os
 import sys
 import time
-import datetime
-import pickle as pk
 from scipy.io.wavfile import write as writeWave
 from scipy.io.wavfile import read as readWave	
 
