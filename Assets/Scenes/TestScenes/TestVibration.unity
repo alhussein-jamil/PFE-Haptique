@@ -165,6 +165,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 8138610916739081446, guid: 7319c0d66da5ae14abbc867cf4608b4c, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8138610916739081446, guid: 7319c0d66da5ae14abbc867cf4608b4c, type: 3}
       propertyPath: devicesParameters.Array.data[0].port
       value: COM5
       objectReference: {fileID: 0}
@@ -306,8 +310,8 @@ MonoBehaviour:
   autoStartVibDevice: 1
   vibrotactileDeviceName: VibrotactileDevice
   frequencyVib: 4000
-  sampleNumber: 32
-  numberOfChannel: 28
+  sampleNumber: 8
+  numberOfChannel: 8
   maxPWM: 511
   hapticDevices:
   - {fileID: 896133190}
@@ -376,7 +380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sourceSignal: {fileID: 1470088202}
-  deviceVolume: 0.2
+  deviceVolume: 0.085
   active: 1
 --- !u!4 &896133191
 Transform:
@@ -571,7 +575,7 @@ MonoBehaviour:
     startOnAwake: 1
     playModeType: 0
     duration: 0
-    volume: 1
+    volume: 0.4
 --- !u!4 &1470088203
 Transform:
   m_ObjectHideFlags: 0
