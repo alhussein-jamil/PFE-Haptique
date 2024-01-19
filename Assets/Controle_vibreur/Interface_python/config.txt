@@ -1,0 +1,33 @@
+#PORT: 'COM4'
+
+#AFFnCHANNELS: 10
+
+#>channelNames:
+#0: 'Pouce'
+#1: 'PaumeExtH'
+#2: 'PaumeExtB'
+#3: 'PaumeInt'
+#4: 'PaumeAnnulaire'
+#6: 'PaumeIndex'
+#<channelNames
+
+-> Paramètres de signaux
+    -Sinus
+#default_freq: 100
+#default_amp: 0.1
+#default_burst: 1.000
+    -Impulsion
+#default_tau: 2.000
+    -Glissement
+#default_dt: 2.000
+#default_discrdt: 2.000
+#default_logcoef: 0.5
+#default_continu: False
+#default_AR: False
+<- Paramètres de signaux
+
+-> Paramètres d'affichage
+#N_GLISSEMENT: 2
+#N_STEP_GLISSEMENT: 5
+<- Paramètres d'affichage
+

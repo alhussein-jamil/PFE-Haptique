@@ -11,17 +11,17 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TestScenes/TestVrHandsMeta.unity
     guid: c07e8bb5c9276fe44a5e58347754f162
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TestScenes/TestCharacterHandTracking.unity
     guid: 883e84cf9d8dfee4aa0255da3abd02c8
-  - enabled: 0
-    path: Assets/Samples 1/Scenes/MovementISDKIntegration.unity
+  - enabled: 1
+    path: Packages/com.meta.movement/Samples/Scenes/MovementISDKIntegration.unity
     guid: 788805bcffb96f84ab907f4730e5759e
   - enabled: 0
-    path: Assets/Scenes/TestScenes/FullBodyTracking.unity
+    path: Packages/com.meta.movement/Samples/Scenes/MovementHipPinning.unity
     guid: c5846fe596ba70848af39ac75c189ca4
   - enabled: 0
-    path: Assets/Samples 1/Scenes/MovementLocomotion.unity
+    path: Packages/com.meta.movement/Samples/Scenes/MovementLocomotion.unity
     guid: dea6f4ca12e28344ebca139bbdb57ce2
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 75cfe52963119654c991c850ab9e1171, type: 2}
