@@ -46,7 +46,8 @@ namespace Franka
 
             // Cut the message into an array of strings 
             double[] commandValues = LineToCoords(bytes).ToArray();
-            for (int idx = 0; idx < commandValues.Length - 1; idx++)
+
+            for (int idx = 0; idx < commandValues.Length; idx++)
             {
                 encoderValues[idx] = commandValues[idx] * 180 / Math.PI;
             }
