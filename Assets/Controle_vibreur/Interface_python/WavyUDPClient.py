@@ -6,14 +6,13 @@
 
 from threading import Thread
 import socket
-import time
 import sys
 import collections
 
 
 SFRAME_HEADER=b'$D'
-TRAME_HEAD_16bits=int.from_bytes(b'C')
-TRAME_HEAD_8bits=int.from_bytes(b'c')
+TRAME_HEAD_16bits=int.from_bytes(b'C', byteorder='big')
+TRAME_HEAD_8bits=int.from_bytes(b'c', byteorder='big')
 # ===============================================================
 # ---------------------- class WavyUDPClient ------------------------
 class WavyUDPClient(Thread):
