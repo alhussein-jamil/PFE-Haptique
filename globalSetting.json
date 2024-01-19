@@ -7,7 +7,7 @@
     {
         "overwrite_data":true,
 		"device_name":"VibrotactileDevice",
-        "host_port":"COM4",
+        "host_port":"COM5",
         "host_speed":9600,
 		"frequency":10000,
 		"auto_start":true,
