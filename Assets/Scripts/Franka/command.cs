@@ -39,19 +39,6 @@ namespace Franka
             }
         }
 
-        public void ParseMessage(ChannelMessage message)
-        {
-            // split the message into a list of bytes
-            List<byte> bytes = System.Text.Encoding.Unicode.GetBytes(message.Message.ToString()).ToList();
-
-            // Cut the message into an array of strings 
-            double[] commandValues = LineToCoords(bytes).ToArray();
-
-            for (int idx = 0; idx < commandValues.Length; idx++)
-            {
-                encoderValues[idx] = commandValues[idx] * 180 / Math.PI;
-            }
-        }
 
 
         void SubscribeToRedis()
@@ -71,7 +58,11 @@ namespace Franka
         {
             if (messageQueue.Count > 0)
             {
-                ParseMessage(messageQueue.Dequeue());
+                double[] commandValues = RedisConnection.ParseMessage(messageQueue.Dequeue());
+                for (int idx = 0; idx < commandValues.Length; idx++)
+                {
+                    encoderValues[idx] = commandValues[idx] * 180 / Math.PI;
+                }
             }
             else
             {
@@ -79,32 +70,19 @@ namespace Franka
             }
         }
 
-
-        static List<double> LineToCoords(List<byte> bytes)
-        {
-            List<double> ret = new List<double>();
-
-            for (int i = 0; i < bytes.Count; i += 8)
-            {
-                byte[] b = bytes.Skip(i).Take(8).ToArray();
-                // make sure you have 8 bytes
-                if (b.Length < 8)
-                    break;
-                ret.Add(BitConverter.ToDouble(b, 0));
-            }
-
-            return ret;
-        }
-
         // Update is called once per frame
         void Update()
         {
-            if (!subscriptionDone && redisConnection.doneInit)
+            if (redisConnection.doneInit)
             {
-                SubscribeToRedis();
-                subscriptionDone = true;
+                if (!subscriptionDone)
+                {
+                    SubscribeToRedis();
+                    subscriptionDone = true;
+                }
+
+                    SetTargets(encoderValues);
             }
-            SetTargets(encoderValues);
         }
     }
 }

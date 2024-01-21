@@ -1,14 +1,13 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using StackExchange.Redis;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Franka
 {
     public class SliderManager : MonoBehaviour
     {
-
         public GameObject sliderContainer;
         public Slider[] positionSliders;
         public double[] encoderValues;
@@ -29,20 +28,8 @@ namespace Franka
             sliderValues = new float[positionSliders.Length];
 
             InvokeRepeating("Publish", 0f, 0.001f);
-
         }
-        static List<byte> CoordsToLine(double[] coords)
-        {
-            List<byte> ret = new List<byte>();
 
-            foreach (var coord in coords)
-            {
-                byte[] bytes = BitConverter.GetBytes(coord);
-                ret.AddRange(bytes);
-            }
-
-            return ret;
-        }
         void PostInit()
         {
             articulationChain = controller.articulationChain;
@@ -55,9 +42,9 @@ namespace Franka
                 positionSliders[idx].maxValue = joint.xDrive.upperLimit / 180 * (float)Math.PI;
             }
 
-            
             doneInit = true;
         }
+
         void Publish()
         {
             if (!redisConnection.doneInit)
@@ -65,20 +52,17 @@ namespace Franka
 
             for (int idx = 0; idx < encoderValues.Length; idx++)
             {
-
-                encoderValues[idx] =positionSliders[idx].value;
-
+                encoderValues[idx] = positionSliders[idx].value;
             }
-            byte[] bytes = CoordsToLine(encoderValues).ToArray();
+            byte[] bytes = RedisConnection.CoordsToLine(encoderValues).ToArray();
             string message = System.Text.Encoding.Unicode.GetString(bytes);
             redisConnection.publisher.Publish(redisConnection.simRobotChannel, message);
         }
+
         void Update()
         {
             if (!doneInit && controller.subscriptionDone)
                 PostInit();
-
-
         }
     }
 }
