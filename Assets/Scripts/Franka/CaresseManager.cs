@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using StackExchange.Redis;
 using UnityEngine;
 
 namespace Franka
