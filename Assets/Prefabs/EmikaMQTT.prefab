@@ -2938,7 +2938,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.005289988, y: 0.5761398, z: -0.0048112525, w: 0.81732}
   m_LocalPosition: {x: 0.395, y: 0.01, z: 3.161}
-  m_LocalScale: {x: 2.1110795, y: 2.1110795, z: 2.1110795}
+  m_LocalScale: {x: 1.07, y: 1.07, z: 1.07}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 859733516707116989}
@@ -2977,8 +2977,8 @@ MonoBehaviour:
   selectedIndex: 0
   control: 0
   stiffness: 100000
-  damping: 100
-  forceLimit: 200
+  damping: 10000
+  forceLimit: 10000
   speed: 5
   torque: 100
   acceleration: 5
@@ -2995,6 +2995,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83cecb4d76a1cd4f81712ae00538518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  connection_string: localhost:6379
   doneInit: 0
 --- !u!114 &4335074976900046954
 MonoBehaviour:

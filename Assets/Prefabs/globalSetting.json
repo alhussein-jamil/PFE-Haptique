@@ -1,0 +1,24 @@
+{
+    "global_setting":
+    {
+        "debug":true,
+    },
+    "vibrotactile_device_setting":
+    {
+        "overwrite_data":true,
+		"device_name":"VibrotactileDevice",
+        "host_port":"COM4",
+        "host_speed":9600,
+		"frequency":10000,
+		"auto_start":true,
+    },
+	 "grip_device_setting":
+    {
+        "overwrite_data":false,
+		"device_name":"GripDevice",
+        "host_port":"COM4",
+        "host_speed":115200,
+		"frequency":500,
+		"auto_start":false,
+    },
+}

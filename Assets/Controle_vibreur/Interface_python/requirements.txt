@@ -1,0 +1,5 @@
+matplotlib
+pyqtgraph
+pyserial
+PyQt5
+scikit-learn

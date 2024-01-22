@@ -6,7 +6,7 @@ public class Brush_Movement : MonoBehaviour
 {
     public Transform startPoint; 
     public Transform endPoint;
-
+    public GameObject Brush;
     private Vector3 positionInitiale;
 
     public float duration_of_wave;
@@ -16,9 +16,11 @@ public class Brush_Movement : MonoBehaviour
     private bool movingForward = false;
     private bool curvedMovement = false;
 
+
     void Start()
     {
         positionInitiale = transform.position;
+        Brush.SetActive(false);
     }
 
     private void Update()
@@ -51,7 +53,9 @@ public class Brush_Movement : MonoBehaviour
             timer = 0.0f;
             movingForward = false;
             curvedMovement = false;
+            Brush.SetActive(false);
             transform.position = positionInitiale;
+
             transform.rotation = Quaternion.Euler(0.0f , -90.0f , 0.0f);
         }
     }
@@ -59,13 +63,17 @@ public class Brush_Movement : MonoBehaviour
     // method that is played by the button on the Unity scene. It starts the brush movement
     public void StartForwardMovement()
     {
+        Brush.SetActive(true);
         movingForward = true;
     }
 
     public void StartCurvedMovement()
-    {
+    {   
+        Brush.SetActive(true);
+
         transform.rotation = Quaternion.Euler(0.0f, 90.0f, -60.0f);
         curvedMovement = true;
+        
     }
 
     // the information about the speed of the brush movement is read from the .csv file during the experiment
@@ -74,6 +82,9 @@ public class Brush_Movement : MonoBehaviour
         duration_of_wave = visualSpeed/6;
 
     }
+
+   
+   
 
 }
 
