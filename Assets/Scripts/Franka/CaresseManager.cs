@@ -49,10 +49,7 @@ namespace Franka
         {
             if (!redisConnection.doneInit)
                 return;
-            byte[] bytes = RedisConnection.CoordsToLine(new double[] { caresseSpeed }).ToArray();
-            string message = System.Text.Encoding.Unicode.GetString(bytes);
-            //Publish the message
-            redisConnection.publisher.Publish(redisConnection.caresseChannel, message);
+            redisConnection.publisher.Publish(redisConnection.caresseChannel, caresseSpeed.ToString());
         }
 
         public void setSpeed()
@@ -91,8 +88,8 @@ namespace Franka
                 //subscribe to the channel
                 channel.OnMessage(message =>
                 {
-                    double[] parsedValues = RedisConnection.ParseMessage(message);
-                    Debug.Log("Received " + parsedValues[0].ToString() + " from " + channel);
+                    double parsedValue = double.Parse(message.Message);
+                    Debug.Log("Received " + parsedValue + " from " + channel);
                 });
                 Subscribe = false;
             }
