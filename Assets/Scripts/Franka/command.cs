@@ -49,7 +49,10 @@ namespace Franka
             channel.OnMessage(message =>
             {
                 messageQueue.Enqueue(message);
-
+                if (messageQueue.Count > 10)
+                {
+                    messageQueue.Dequeue();
+                }
             }
             );
         }
@@ -59,6 +62,7 @@ namespace Franka
         {
             if (messageQueue.Count > 0)
             {
+
                 double[] commandValues = RedisConnection.ParseMessage(messageQueue.Dequeue());
                 for (int idx = 0; idx < commandValues.Length; idx++)
                 {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Redis;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Franka
@@ -51,13 +52,10 @@ namespace Franka
         public static double[] ParseMessage(ChannelMessage message)
         {
             // split the message into a list of bytes
-            List<byte> bytes = System
-                .Text.Encoding.Unicode.GetBytes(message.Message.ToString())
-                .ToList();
+            List<byte> bytes = ((byte[])message.Message).ToList();
 
             // Cut the message into an array of strings
             double[] parsedValues = LineToCoords(bytes).ToArray();
-
             return parsedValues;
         }
 
@@ -84,6 +82,7 @@ namespace Franka
             simRobotChannel = new RedisChannel("Sim_Robot_Encoders", RedisChannel.PatternMode.Auto);
             caresseChannel = new RedisChannel("caresse", RedisChannel.PatternMode.Auto);
             doneInit = true;
+
         }
     }
 }
