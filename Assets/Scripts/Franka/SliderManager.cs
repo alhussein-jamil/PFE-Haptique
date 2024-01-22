@@ -55,8 +55,8 @@ namespace Franka
                 encoderValues[idx] = positionSliders[idx].value;
             }
             byte[] bytes = RedisConnection.CoordsToLine(encoderValues).ToArray();
-            string message = System.Text.Encoding.Unicode.GetString(bytes);
-            redisConnection.publisher.Publish(redisConnection.simRobotChannel, message);
+
+            redisConnection.publisher.Publish(redisConnection.simRobotChannel, bytes);
         }
 
         void Update()

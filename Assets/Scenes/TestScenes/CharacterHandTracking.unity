@@ -374,6 +374,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeatedJacob
       objectReference: {fileID: 0}
+    - target: {fileID: 7543126939148276103, guid: 0d1702d6a0dcfc24bae3b22478431431, type: 3}
+      propertyPath: AllowRecenter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7543126939148276103, guid: 0d1702d6a0dcfc24bae3b22478431431, type: 3}
+      propertyPath: resetTrackerOnLoad
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

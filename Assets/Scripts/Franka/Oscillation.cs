@@ -33,8 +33,8 @@ namespace Franka
                 encoderValues[idx] = amplitude * Mathf.Sin(frequency * Time.time);
             }
             byte[] bytes = RedisConnection.CoordsToLine(encoderValues).ToArray();
-            string message = System.Text.Encoding.Unicode.GetString(bytes);
-            publisher.Publish(redisConnection.simRobotChannel, message);
+
+            publisher.Publish(redisConnection.simRobotChannel, bytes);
         }
     }
 }
