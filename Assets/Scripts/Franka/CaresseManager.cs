@@ -8,23 +8,35 @@ namespace Franka
     public class CaresseManager : MonoBehaviour
     {
         private RedisConnection redisConnection;
-        public double caresseSpeed;
+        public double caresseSpeedRobot;
+        public string usedObject;
+        public double caresseSpeedBrush;
+        public string congruency;
         public bool Subscribe = true;
-        public double[] valuesToSend;
         public int speedidx = 0;
-        public string csvPath = "Assets/Data/caresse.csv";
+        public string csvPath = "Assets/Data/Data_participant_Incongruency.csv";
+
+        public string[] objects;
+        public double[] caresseSpeeds;
+        public double[] brushSpeeds;
+        public string[] congruencies;
 
         void Start()
         {
             redisConnection = GetComponent<RedisConnection>();
-            valuesToSend = getValues(csvPath);
-            if (valuesToSend.Length > 0)
-                caresseSpeed = valuesToSend[0];
+        
+            (objects, caresseSpeeds, brushSpeeds, congruencies) = getValues(csvPath);
+            setValues();
         }
 
-        private double[] getValues(string csvPath)
+    private (string[], double[], double[], string[])  getValues(string csvPath)
         {
+            List<string> firstColumn = new List<string>();
             List<double> secondColumn = new List<double>();
+            List<double> thirdColumn = new List<double>();
+            List<string> fourthColumn = new List<string>();
+            var firstLine = true;
+
             try
             {
                 using (var reader = new StreamReader(csvPath))
@@ -33,8 +45,19 @@ namespace Franka
                     while (!reader.EndOfStream)
                     {
                         var line = reader.ReadLine();
+                        if (line == ";;;;;")
+                            break;
+
+                        if (firstLine)
+                        {
+                            firstLine = false;
+                            continue;
+                        }
                         var values = line.Split(';');
+                        firstColumn.Add(values[0]);
                         secondColumn.Add(Convert.ToDouble(values[1]));
+                        thirdColumn.Add(Convert.ToDouble(values[2]));
+                        fourthColumn.Add(values[3]);
                     }
                 }
             }
@@ -42,28 +65,32 @@ namespace Franka
             {
                 Debug.Log(e.Message);
             }
-            return secondColumn.ToArray();
+            return (firstColumn.ToArray(), secondColumn.ToArray(), thirdColumn.ToArray(), fourthColumn.ToArray());
         }
 
         public void publishCaresse()
         {
             if (!redisConnection.doneInit)
                 return;
-            redisConnection.publisher.Publish(redisConnection.caresseChannel, caresseSpeed.ToString());
+            redisConnection.publisher.Publish(redisConnection.caresseChannel, caresseSpeedRobot.ToString());
         }
 
-        public void setSpeed()
+        public void setValues()
         {
             if (!redisConnection.doneInit)
                 return;
-            caresseSpeed = valuesToSend[speedidx];
+            usedObject = objects[speedidx];
+            caresseSpeedRobot = caresseSpeeds[speedidx];
+            caresseSpeedBrush = brushSpeeds[speedidx];
+            congruency = congruencies[speedidx];
+
         }
 
         public void nextSpeed()
         {
             if (!redisConnection.doneInit)
                 return;
-            if (speedidx == valuesToSend.Length - 1)
+            if (speedidx == objects.Length - 1)
                 speedidx = 0;
             else
                 speedidx++;
@@ -74,7 +101,7 @@ namespace Franka
             if (!redisConnection.doneInit)
                 return;
             if (speedidx == 0)
-                speedidx = valuesToSend.Length - 1;
+                speedidx = objects.Length - 1;
             else
                 speedidx--;
         }
@@ -93,6 +120,7 @@ namespace Franka
                 });
                 Subscribe = false;
             }
+            setValues();
         }
     }
 }
