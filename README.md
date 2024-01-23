@@ -14,3 +14,14 @@ Once memurai is installed, you can start the redis server from the command line 
 C:\Program Files\Memurai\memurai.exe
 ```
 if the port is already in use, stop the service of memurai from services.msc and restart it again.
+
+
+## Usage
+Clone the repository and open in Unity. 
+
+
+## TODO
+- [x] Add main menu that requires controller to calibrate
+- [x] Add calibration scene
+- [x] Add calibration protocol
+- [x] Add a communication between the headset and the computer to register data

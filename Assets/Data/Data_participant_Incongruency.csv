@@ -1,0 +1,12 @@
+﻿stim.visuel;velocite.tactile;velocite.visuel;congruency;pleasantness;intensity
+pinceau;3;3;congruent;X;X
+fleche;0.5;1.5;incongruent;X;X
+fleche;1;1;mismatch_congruent;X;X
+pinceau;10;6;mismatch_incongruent;X;X
+fleche;30;30;congruent;X;X
+pinceau;3;0.5;incongruent;X;X
+;;;;;
+congruent= velo.tactile = velocite.visuel;;;;;
+incongruent= velo.tactile et velocite.visuel sont dans le même sens mais ne match pas en velocite.;;;;;
+mismatch: velo.tactile et velocite.visuel ne sont pas dans le même sens. De plus, ils peuvent être congruent ou incongruent. ;;;;;
+Je pars du principe que le STIMULUS TACTILE va toujours de  proximal à distal. Le STIMULUS visuel peut aller dans les deux-sens. Ainsi, quand on parle de mismatch, c'est toujours un mismatch visuel. ;;;;;
