@@ -36,13 +36,14 @@ namespace Franka
             List<double> thirdColumn = new List<double>();
             List<string> fourthColumn = new List<string>();
             var firstLine = true;
+            IFormatProvider iFormatProvider = new System.Globalization.CultureInfo("en-US");
 
             try
             {
                 using (var reader = new StreamReader(csvPath))
                 {
                     Debug.Log("Reading csv file");
-                    while (!reader.EndOfStream)
+                    while (reader.Peek() >= 0)
                     {
                         var line = reader.ReadLine();
                         if (line == ";;;;;")
@@ -55,8 +56,9 @@ namespace Franka
                         }
                         var values = line.Split(';');
                         firstColumn.Add(values[0]);
-                        secondColumn.Add(Convert.ToDouble(values[1]));
-                        thirdColumn.Add(Convert.ToDouble(values[2]));
+                        //make sure to have the correct format
+                        secondColumn.Add(Convert.ToDouble(values[1], iFormatProvider));
+                        thirdColumn.Add(Convert.ToDouble(values[2], iFormatProvider));
                         fourthColumn.Add(values[3]);
                     }
                 }
