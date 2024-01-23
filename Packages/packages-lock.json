@@ -162,15 +162,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.meta.xr.simulator.samples": {
-      "version": "file:C:/Users/Alhus/Downloads/com.meta.xr.simulator.samples-60.0.0 (1)/package",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.meta.xr.sdk.core": "60.0.0",
-        "com.meta.xr.simulator": "60.0.0"
-      }
-    },
     "com.unity.ai.navigation": {
       "version": "1.1.5",
       "depth": 2,
