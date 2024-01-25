@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class calibrate : MonoBehaviour
+public class calibrate2 : MonoBehaviour
 {
     public Transform RightHand;
     public Transform LeftHand;
