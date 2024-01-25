@@ -12,6 +12,7 @@ namespace Franka
         public ConnectionMultiplexer redis;
 
         public string connection_string = "localhost:6379";
+        public string test_message = "Hello World";
         public IDatabase db;
         public ISubscriber subscriber;
         public ISubscriber publisher;
@@ -71,7 +72,7 @@ namespace Franka
                 publisher = redis.GetSubscriber();
                 RedisChannel testChannel = new RedisChannel("test", RedisChannel.PatternMode.Auto);
                 //publish random message
-                publisher.Publish(testChannel, "Hello World");
+                publisher.Publish(testChannel, test_message);
                 //subscribe to test channel
                 subscriber.Subscribe(
                     testChannel,
