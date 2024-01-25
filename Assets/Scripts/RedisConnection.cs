@@ -19,7 +19,7 @@ namespace Franka
         public RedisChannel robotChannel;
         public RedisChannel caresseChannel;
         public bool doneInit = false;
-
+        public bool requiresRedis = false;
         public static List<double> LineToCoords(List<byte> bytes)
         {
             List<double> ret = new List<double>();
@@ -56,31 +56,36 @@ namespace Franka
 
             // Cut the message into an array of strings
             double[] parsedValues = LineToCoords(bytes).ToArray();
+
             return parsedValues;
         }
 
         // Start is called before the first frame update
         void Start()
         {
-            redis = ConnectionMultiplexer.Connect(connection_string + " ,abortConnect=false");
-            db = redis.GetDatabase();
-            subscriber = redis.GetSubscriber();
-            publisher = redis.GetSubscriber();
-            RedisChannel testChannel = new RedisChannel("test", RedisChannel.PatternMode.Auto);
-            //publish random message
-            publisher.Publish(testChannel, "Hello World");
-            //subscribe to test channel
-            subscriber.Subscribe(
-                testChannel,
-                (channel, message) =>
-                {
-                    Debug.Log((string)message);
-                }
-            );
+            if (requiresRedis)
+            {
+                redis = ConnectionMultiplexer.Connect(connection_string + " ,abortConnect=false");
+                db = redis.GetDatabase();
+                subscriber = redis.GetSubscriber();
+                publisher = redis.GetSubscriber();
+                RedisChannel testChannel = new RedisChannel("test", RedisChannel.PatternMode.Auto);
+                //publish random message
+                publisher.Publish(testChannel, "Hello World");
+                //subscribe to test channel
+                subscriber.Subscribe(
+                    testChannel,
+                    (channel, message) =>
+                    {
+                        Debug.Log((string)message);
+                    }
+                );
 
-            robotChannel = new RedisChannel("encoder_positions", RedisChannel.PatternMode.Auto);
-            simRobotChannel = new RedisChannel("Sim_Robot_Encoders", RedisChannel.PatternMode.Auto);
-            caresseChannel = new RedisChannel("caresse", RedisChannel.PatternMode.Auto);
+                robotChannel = new RedisChannel("encoder_positions", RedisChannel.PatternMode.Auto);
+                simRobotChannel = new RedisChannel("Sim_Robot_Encoders", RedisChannel.PatternMode.Auto);
+                caresseChannel = new RedisChannel("caresse", RedisChannel.PatternMode.Auto);
+            }
+
             doneInit = true;
 
         }

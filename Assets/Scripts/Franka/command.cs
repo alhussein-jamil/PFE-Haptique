@@ -11,23 +11,34 @@ namespace Franka
         public enum RobotType { SimRobot, Robot };
         public ArticulationBody[] articulationChain;
         public double[] encoderValues;
+        public bool calibrationDone = false;
         private RedisConnection redisConnection;
 
         // Dropdown menu for different channels
         public RobotType robotDropdown;
-        public RedisChannel robotChannel;
-        private Queue<ChannelMessage> messageQueue;
+        private RedisChannel robotChannel;
+        // private Queue<ChannelMessage> messageQueue;
 
         public bool subscriptionDone = false;
-
+        private double[][] messages;
+        private List<double[]> messageList;
+        private byte[] lastMessage = new byte[0];
+        public bool firstMove = false;
+        private bool realRobotMoving = false;
+        public float speedScale = 1f;
+        private int idx;
+        private double _speedScale = 1f;
+        private bool simRobotMoving = false;
         // Start is called before the first frame update
+        public float updateFrequency = 1000f;
         void Start()
         {
+            messageList = new List<double[]>();
             redisConnection = GetComponent<RedisConnection>();
             articulationChain = GetComponentsInChildren<ArticulationBody>();
             encoderValues = new double[articulationChain.Length];
-            messageQueue = new Queue<ChannelMessage>();
-            InvokeRepeating("updateTargets", 0f, 0.001f);
+            _speedScale = speedScale;
+            InvokeRepeating("updateTargets", 0f, 1f / updateFrequency);
 
         }
 
@@ -38,21 +49,50 @@ namespace Franka
                 if (idx + 1 < articulationChain.Length)
                     articulationChain[idx + 1].SetDriveTarget(axis: ArticulationDriveAxis.X, value: (float)targets[idx]);
             }
+
         }
 
 
 
         void SubscribeToRedis()
         {
+
+
             robotChannel = (robotDropdown == RobotType.SimRobot) ? redisConnection.simRobotChannel : redisConnection.robotChannel;
             var channel = redisConnection.subscriber.Subscribe(robotChannel);
             channel.OnMessage(message =>
             {
-                messageQueue.Enqueue(message);
-                if (messageQueue.Count > 10)
+
+                // calculate the norm2 difference of last message and current message ie messageList.Last() and messageList.Last( - 1)
+                var lastState = realRobotMoving;
+
+                realRobotMoving = !lastMessage.SequenceEqual(new byte[0]) && !lastMessage.SequenceEqual((byte[])message.Message);
+                if (!realRobotMoving)
+                    _speedScale = speedScale;
+
+                if (!lastState && realRobotMoving)
                 {
-                    messageQueue.Dequeue();
+                    idx = 0;
+                    simRobotMoving = true;
                 }
+
+                if (!firstMove)
+                    firstMove = realRobotMoving;
+
+                if (realRobotMoving && !calibrationDone)
+                    messageList.Add(RedisConnection.ParseMessage(message));
+                if (!calibrationDone && firstMove && !realRobotMoving)
+                {
+                    messages = messageList.ToArray();
+                    messageList.Clear();
+                    calibrationDone = true;
+                    idx = messages.Length;
+
+                }
+
+
+                lastMessage = (byte[])message.Message;
+
             }
             );
         }
@@ -60,18 +100,25 @@ namespace Franka
 
         void updateTargets()
         {
-            if (messageQueue.Count > 0)
+            if (!calibrationDone)
+            {
+                simRobotMoving = false;
+                return;
+            }
+            if ((int)(idx * _speedScale) < messages.Length && simRobotMoving)
             {
 
-                double[] commandValues = RedisConnection.ParseMessage(messageQueue.Dequeue());
+                double[] commandValues = messages[(int)(idx * _speedScale)];
                 for (int idx = 0; idx < commandValues.Length; idx++)
                 {
                     encoderValues[idx] = commandValues[idx] * 180 / Math.PI;
                 }
+                idx++;
             }
             else
             {
-                Debug.Log("No messages in queue");
+                _speedScale = speedScale;
+                simRobotMoving = false;
             }
         }
 
@@ -85,8 +132,9 @@ namespace Franka
                     SubscribeToRedis();
                     subscriptionDone = true;
                 }
+                SetTargets(encoderValues);
 
-                    SetTargets(encoderValues);
+
             }
         }
     }
