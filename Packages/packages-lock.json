@@ -8,7 +8,7 @@
       "hash": "441f6df275ff7bb54169554231ff0f8211148b1e"
     },
     "com.meta.movement": {
-      "version": "file:com.meta.movement",
+      "version": "file:com.meta.mouvement",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -409,18 +409,6 @@
       "source": "registry",
       "dependencies": {
         "com.unity.xr.management": "4.4.0"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.xr.openxr": {
-      "version": "1.9.1",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.xr.management": "4.4.0",
-        "com.unity.xr.legacyinputhelpers": "2.1.2",
-        "com.unity.inputsystem": "1.6.3",
-        "com.unity.xr.core-utils": "2.1.1"
       },
       "url": "https://packages.unity.com"
     },
