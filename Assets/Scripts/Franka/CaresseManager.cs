@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 class CsvParser
 {
@@ -31,7 +30,7 @@ class CsvParser
         // Iterate through the remaining rows and create dictionaries
         for (int i = 1; i < lines.Length; i++)
         {
-            if (lines[i]==";;;;;")
+            if (lines[i] == ";;;;;")
                 break;
             string[] values = lines[i].Split(';');
 
@@ -54,7 +53,7 @@ class CsvParser
 
 namespace Franka
 {
-    
+
     public class CaresseManager : MonoBehaviour
     {
         private RedisConnection redisConnection;
@@ -84,7 +83,7 @@ namespace Franka
 
         public void setValues()
         {
-            foreach(KeyValuePair<string, string> kvp in parsed[speedidx])
+            foreach (KeyValuePair<string, string> kvp in parsed[speedidx])
             {
                 string message = kvp.Key + ";" + kvp.Value;
                 Debug.Log("Sending " + message);

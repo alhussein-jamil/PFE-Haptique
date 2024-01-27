@@ -8,6 +8,10 @@ public class GManager : MonoBehaviour
     private RedisConnection redisConnection;
     public Dictionary<string, string> gameParameters = new Dictionary<string, string>();
     private bool subscribed = false;
+    
+    public double[][] robotCalibrationData = null;    
+    public int calibrationDataLength = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,9 +25,16 @@ public class GManager : MonoBehaviour
         gameParameters["congruency"] = "congruent";
         gameParameters["pleasantness"] = "X";
         gameParameters["intensity"] = "X";
+        //go to main scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene("main");
         
     }
+    public void setCalibrationData(double[][] data)
+    {
 
+        robotCalibrationData = data;
+        Debug.Log("Calibration data set " + robotCalibrationData.Length);
+    }
     (string,  string) ParseGameParameters(string line)
     {
         string[] split = line.Split(';');
@@ -35,6 +46,13 @@ public class GManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.V))
+            // go to robot scene
+            UnityEngine.SceneManagement.SceneManager.LoadScene("RobotScene");
+        if(Input.GetKeyDown(KeyCode.R))
+            // go to main scene
+            UnityEngine.SceneManagement.SceneManager.LoadScene("main");
+        calibrationDataLength = robotCalibrationData == null ? 0 : robotCalibrationData.Length;
         if (!redisConnection.doneInit)
             return;
         if (!subscribed)

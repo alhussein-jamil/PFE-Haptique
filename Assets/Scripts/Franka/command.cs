@@ -36,7 +36,7 @@ namespace Franka
         public double damping = 10000;
         private bool reversed = false;
         public GameObject GameManager;
-
+        private bool calibDataSet = false;
         private void CalibrateRobot()
         {
 
@@ -44,11 +44,13 @@ namespace Franka
             redisConnection.subscriber.UnsubscribeAll();
             Debug.Log("Resetting robot");
             CancelInvoke();
+            GameManager.GetComponent<GManager>().robotCalibrationData = null;
             calibrationDone = false;
             subscriptionDone = false;
             firstMove = false;
             realRobotMoving = false;
             simRobotMoving = false;
+            calibDataSet = false;
             idx = 0;
             _speedScale = 1f;
             lastMessage = new byte[0];
@@ -60,12 +62,21 @@ namespace Franka
         {
             if (GameManager == null)
                 GameManager = GameObject.Find("GameManager");
+
             redisConnection = GameManager.GetComponent<RedisConnection>();
+
             messageList = new List<double[]>();
             encoderValues = new double[links.Length];
             _speedScale = Math.Abs(speedScale);
+            // check for calibration data existence in the game manager
+            if (GameManager.GetComponent<GManager>().robotCalibrationData != null)
+            {
+                messages = GameManager.GetComponent<GManager>().robotCalibrationData;
+                calibrationDone = true;
+                idx = messages.Length;
+            }
             InvokeRepeating("updateTargets", 0f, 1f / updateFrequency);
-            articulationChain = new ArticulationBody[links.Length]; 
+            articulationChain = new ArticulationBody[links.Length];
             for (int idx = 0; idx < links.Length; idx++)
             {
                 articulationChain[idx] = links[idx].GetComponent<ArticulationBody>();
@@ -88,7 +99,7 @@ namespace Franka
             robotChannel = (robotDropdown == RobotType.SimRobot) ? redisConnection.redisChannels["sim_encoder_positions"] : redisConnection.redisChannels["encoder_positions"];
             var robotRedisSubscriber = redisConnection.subscriber.Subscribe(robotChannel);
             robotRedisSubscriber.OnMessage(message =>
-            {                
+            {
                 // calculate the norm2 difference of last message and current message ie messageList.Last() and messageList.Last( - 1)
                 var lastState = realRobotMoving;
 
@@ -134,12 +145,20 @@ namespace Franka
                 simRobotMoving = false;
                 return;
             }
+            else
+            {
+                if (!calibDataSet)
+                {
+                    GameManager.GetComponent<GManager>().setCalibrationData(messages);
+                    calibDataSet = true;
+                }
+            }
             if ((int)(idx * _speedScale * 1000 / updateFrequency) < messages.Length && simRobotMoving)
             {
                 int messageIdx = (int)(idx * _speedScale * 1000 / updateFrequency);
 
                 double[] commandValues = null;
-                
+
                 if (reversed)
                 {
                     if (messages.Length - 1 - messageIdx >= 0 && messages.Length - 1 - messageIdx < messages.Length)

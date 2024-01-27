@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Redis;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Franka
@@ -18,9 +17,6 @@ namespace Franka
         public ISubscriber publisher;
         public string[] channels = new string[] { "test" , "encoder_positions", "sim_encoder_positions", "caresse" };
         public Dictionary<string, RedisChannel> redisChannels = new Dictionary<string, RedisChannel>();
-        // public RedisChannel simRobotChannel;
-        // public RedisChannel robotChannel;
-        // public RedisChannel caresseChannel;
         public RedisChannel testChannel = new RedisChannel("test", RedisChannel.PatternMode.Auto);
 
         public bool doneInit = false;
