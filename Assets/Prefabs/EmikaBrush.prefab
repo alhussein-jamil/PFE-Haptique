@@ -4489,7 +4489,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connection_string: localhost:6379
+  test_message: Hello World
   doneInit: 0
+  requiresRedis: 0
 --- !u!114 &5226335690050431032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4504,8 +4506,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   articulationChain: []
   encoderValues: []
+  calibrationDone: 0
   robotDropdown: 0
   subscriptionDone: 0
+  firstMove: 0
+  speedScale: 1
+  links:
+  - {fileID: 158077402505826666}
+  - {fileID: 1840847926022047063}
+  - {fileID: 2928627388837460356}
+  - {fileID: 4450574402649432133}
+  - {fileID: 2960852266004974134}
+  - {fileID: 7003123656742524102}
+  - {fileID: 4084429869097772791}
+  updateFrequency: 1000
+  kp: 0.1
+  ki: 0.1
+  kd: 0.01
+  stiffness: 0.1
+  damping: 0.01
+  reversed: 0
 --- !u!114 &1641042627966532193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4538,6 +4558,9 @@ MonoBehaviour:
   amplitude: 2.71
   frequency: 0.5
   encoderValues: []
+  Moving: 0
+  pubInterval: 0.0010000000474974513
+  lastValue: 0
 --- !u!1 &7325704451338444062
 GameObject:
   m_ObjectHideFlags: 0

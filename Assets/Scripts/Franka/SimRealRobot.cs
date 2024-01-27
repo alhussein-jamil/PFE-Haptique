@@ -1,26 +1,26 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using StackExchange.Redis;
 using System;
-using System.Security.Policy;
+
 namespace Franka{
+    
 public class SimRealRobot : MonoBehaviour
 {
     List<Tuple<double, double, double, double, double, double, double>> poss = new List<Tuple<double, double, double, double, double, double, double>>();
 
     public string filePath = "a.pos";
-    public RedisConnection redisConnection;
-    
+    private RedisConnection redisConnection;
+    public GameObject GameManager;
     public float frequency = 1000f; // 1000 Hz
-    private int idx = 0;
+    public int idx = 0;
     public bool Moving = false;
     private bool _Moving = false;
     private void Start()
     {
-
-        redisConnection = GetComponent<RedisConnection>();
+        if (GameManager == null)
+                GameManager = GameObject.Find("GameManager");
+        redisConnection = GameManager.GetComponent<RedisConnection>();
         _Moving = Moving;
         ReadData();
         // Start invoking the method with the specified interval
@@ -56,7 +56,7 @@ public class SimRealRobot : MonoBehaviour
                 Tuple<double, double, double, double, double, double, double> pos = poss[idx];
                 double[] posArray = new double[7] { pos.Item1, pos.Item2, pos.Item3, pos.Item4, pos.Item5, pos.Item6, pos.Item7 };
                 byte[] bytes = RedisConnection.CoordsToLine(posArray).ToArray();
-                redisConnection.publisher.Publish(redisConnection.robotChannel, bytes);
+                redisConnection.publisher.Publish(redisConnection.redisChannels["sim_encoder_positions"], bytes);
                 if(_Moving)
                 {
                     if (idx < poss.Count - 1)

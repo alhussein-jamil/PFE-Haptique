@@ -106,7 +106,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 2.6498823
-  m_ParentAnchorPosition: {x: 0.31600013, y: 0.000000029802322, z: 0.000000003529275}
+  m_ParentAnchorPosition: {x: 0.31600013, y: -0.000000059604645, z: -0.000000029593426}
   m_ParentAnchorRotation: {x: 0.00000003062232, y: 0.00000001152453, z: -1.0000005, w: -0.000000059604645}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -658,7 +658,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 2.3795187
-  m_ParentAnchorPosition: {x: -0.000000028702933, y: -0.000000029802322, z: 0.000000014999419}
+  m_ParentAnchorPosition: {x: -0.00000005581407, y: -0.000000059604645, z: 0.0000000143615155}
   m_ParentAnchorRotation: {x: -0.0000000059269007, y: -0.000000028975961, z: 0.000000059604645, w: 1.0000002}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -972,7 +972,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 0.40529126
-  m_ParentAnchorPosition: {x: -0.0000010728842, y: -0.000000059604645, z: 0.08800003}
+  m_ParentAnchorPosition: {x: -0.0000010728842, y: 0.0000001192094, z: 0.08799999}
   m_ParentAnchorRotation: {x: 0.000000009219624, y: 0.000000009219624, z: -1.000001, w: -0.000000059604645}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -1557,7 +1557,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.000000074505834, y: 0.10699952, z: 0.000000037252903}
+  m_ParentAnchorPosition: {x: -0.000000074505834, y: 0.10699946, z: 0.000000029802322}
   m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071074, w: 0.7071074}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
@@ -1773,7 +1773,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 1.1285807
-  m_ParentAnchorPosition: {x: 1.1368686e-13, y: 0.000001072884, z: 0}
+  m_ParentAnchorPosition: {x: 0.00000011920945, y: 0.000001072884, z: -0.000000037252903}
   m_ParentAnchorRotation: {x: 0.0000000066677632, y: 0.00000003070464, z: -1.0000008, w: 0}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -2681,7 +2681,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 2.3599997
-  m_ParentAnchorPosition: {x: -0.000000028702933, y: 0.33299997, z: 0.000000014999419}
+  m_ParentAnchorPosition: {x: -0.00000005581407, y: 0.33299994, z: 0.0000000143615155}
   m_ParentAnchorRotation: {x: 0, y: 0, z: -0.7071069, w: 0.7071069}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -2921,6 +2921,8 @@ GameObject:
   - component: {fileID: 6026808390133494149}
   - component: {fileID: 4335074976900046954}
   - component: {fileID: 7426878724462300071}
+  - component: {fileID: 1239260817590273310}
+  - component: {fileID: 2307063761612183897}
   m_Layer: 0
   m_Name: EmikaMQTT
   m_TagString: robot
@@ -2936,7 +2938,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4720664292326423645}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.005289988, y: 0.5761398, z: -0.0048112525, w: 0.81732}
+  m_LocalRotation: {x: -0.0052918694, y: 0.5761377, z: -0.0048111626, w: 0.8173213}
   m_LocalPosition: {x: 0.395, y: 0.01, z: 3.161}
   m_LocalScale: {x: 1.07, y: 1.07, z: 1.07}
   m_ConstrainProportionsScale: 0
@@ -2995,8 +2997,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83cecb4d76a1cd4f81712ae00538518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connection_string: localhost:6379
-  doneInit: 0
+  connection_string: 192.168.1.141:6379
+  test_message: Hello World
+  doneInit: 1
+  requiresRedis: 1
 --- !u!114 &4335074976900046954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3011,9 +3015,62 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   articulationChain: []
   encoderValues: []
-  robotDropdown: 0
+  calibrationDone: 0
+  robotDropdown: 1
   subscriptionDone: 0
+  firstMove: 0
+  speedScale: 1
+  links:
+  - {fileID: 4534798706242959531}
+  - {fileID: 1235154813813745931}
+  - {fileID: 116168223366186670}
+  - {fileID: 7113940418922779449}
+  - {fileID: 6467654862928616602}
+  - {fileID: 2617618734800873811}
+  - {fileID: 1800880666668790375}
+  updateFrequency: 60
+  kp: 0.21
+  ki: 0.1
+  kd: 0.1
+  stiffness: 0.1
+  damping: 0.01
+  reversed: 0
 --- !u!114 &7426878724462300071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4720664292326423645}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d38cc6925e7ece04381886f8164e32ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sliderContainer: {fileID: 0}
+  positionSliders: []
+  encoderValues: []
+  sliderValues: []
+  redisConnection: {fileID: 0}
+--- !u!114 &1239260817590273310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4720664292326423645}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b24928bd1a515df489aa552051550729, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitude: 2
+  frequency: 0.5
+  encoderValues: []
+  Moving: 0
+  pubInterval: 0.0010000000474974513
+  lastValue: 0
+--- !u!114 &2307063761612183897
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3022,13 +3079,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4720664292326423645}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d38cc6925e7ece04381886f8164e32ed, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f0aa8f9344ca9644892c10d99d4a207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sliderValues: []
-  sliderContainer: {fileID: 0}
-  positionSliders: []
-  encoderValues: []
+  filePath: a.pos
+  redisConnection: {fileID: 6026808390133494149}
+  frequency: 1000
+  Moving: 0
 --- !u!1 &4912207359444960078
 GameObject:
   m_ObjectHideFlags: 0
@@ -3518,7 +3575,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 2.9812818
-  m_ParentAnchorPosition: {x: -0.3840009, y: 0.000000059604645, z: -0.0825}
+  m_ParentAnchorPosition: {x: -0.3840009, y: -0.00000011920929, z: -0.082499966}
   m_ParentAnchorRotation: {x: -0.000000009219624, y: 0.000000009219624, z: 0, w: 1.0000006}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -3800,7 +3857,7 @@ ArticulationBody:
   m_Enabled: 1
   serializedVersion: 5
   m_Mass: 2.6948018
-  m_ParentAnchorPosition: {x: -0.00000002980236, y: 0.000000178814, z: 0.08250004}
+  m_ParentAnchorPosition: {x: -0.00000002980236, y: 0.000000178814, z: 0.08250003}
   m_ParentAnchorRotation: {x: 0.00000000765558, y: -0.000000011442212, z: -1.0000005, w: 0.000000059604645}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
