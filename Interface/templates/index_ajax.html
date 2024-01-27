@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameter Selection</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Handle form submission using AJAX
+            $('form').submit(function(event) {
+                event.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/update_params',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        console.log(response);
+                        // You can add additional handling if needed
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <form method="post">
+        {% for param in parameters.keys() %}
+            <label for="{{ param }}">{{ param }}:</label>
+            <select name="{{ param }}" id="{{ param }}">
+                {% for choice in parameters[param] %}
+                    <option value="{{ choice }}" {% if parameters[param] == choice %} selected {% endif %}>{{ choice }}</option>
+                {% endfor %}
+            </select>
+            <br>
+        {% endfor %}
+        <br>
+        <button type="submit">Update Parameters</button>
+    </form>
+</body>
+</html>

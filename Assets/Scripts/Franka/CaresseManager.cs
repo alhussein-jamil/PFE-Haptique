@@ -77,8 +77,7 @@ namespace Franka
             if (!redisConnection.doneInit)
                 return;
             redisConnection.publisher.Publish(redisConnection.redisChannels["caresse"], gameManager.GetComponent<GManager>().gameParameters["velocite.tactile"]);
-            float scale = float.Parse(gameManager.GetComponent<GManager>().gameParameters["velocite.visuel"]) / float.Parse(gameManager.GetComponent<GManager>().gameParameters["velocite.tactile"]);
-            redisConnection.publisher.Publish(redisConnection.redisChannels["virtual_caresse"], scale.ToString());
+
         }
 
         public void setValues()
