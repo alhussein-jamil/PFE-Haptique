@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Franka;
 using UnityEngine;
@@ -11,13 +10,14 @@ public class GManager : MonoBehaviour
     
     public double[][] robotCalibrationData = null;    
     public int calibrationDataLength = 0;
+    public string gameParametersString = "";
 
     // Start is called before the first frame update
     void Start()
     {
         DontDestroyOnLoad(gameObject);
         redisConnection = GetComponent<RedisConnection>();
-
+        gameParameters["SceneType"] = "robot";
         //initialize game parameters
         gameParameters["stim.visuel"] = "pinceau";
         gameParameters["velocite.tactile"] = "3";
@@ -28,6 +28,15 @@ public class GManager : MonoBehaviour
         //go to main scene
         UnityEngine.SceneManagement.SceneManager.LoadScene("main");
         
+    }
+    string DictToString(Dictionary<string, string> dict)
+    {
+        string s = "";
+        foreach (KeyValuePair<string, string> entry in dict)
+        {
+            s += entry.Key + ";" + entry.Value + "\n";
+        }
+        return s;
     }
     public void setCalibrationData(double[][] data)
     {
@@ -49,10 +58,11 @@ public class GManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.V))
             // go to robot scene
             UnityEngine.SceneManagement.SceneManager.LoadScene("RobotScene");
-        if(Input.GetKeyDown(KeyCode.R))
+        if(Input.GetKeyDown(KeyCode.Q))
             // go to main scene
             UnityEngine.SceneManagement.SceneManager.LoadScene("main");
         calibrationDataLength = robotCalibrationData == null ? 0 : robotCalibrationData.Length;
+        gameParametersString = DictToString(gameParameters);
         if (!redisConnection.doneInit)
             return;
         if (!subscribed)
@@ -63,7 +73,8 @@ public class GManager : MonoBehaviour
                 (string key, string value) = ParseGameParameters(line);
                 gameParameters[key] = value;
                 Debug.Log("Received game parameter: " + key + " " + value);
-
+                float scale = float.Parse(gameParameters["velocite.visuel"]) / float.Parse(gameParameters["velocite.tactile"]);
+                redisConnection.publisher.Publish(redisConnection.redisChannels["virtual_caresse"], scale.ToString());
             });
             subscribed = true;
         }
