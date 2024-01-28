@@ -11,32 +11,14 @@ public class FeedbackManager : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.Find("GameManager");
-
-        // add callback to sliders 
-        pleasureSlider.onValueChanged.AddListener(delegate { pleasureValueChanged(); });
-        intensitySlider.onValueChanged.AddListener(delegate { intensityValueChanged(); });
     }
 
-    void pleasureValueChanged()
+    public void publishSensationData()
     {
         if(!gameManager.GetComponent<RedisConnection>().redis.IsConnected)
             return;
-        Debug.Log("Pleasure value changed");
-        string message = "pleasure;" + pleasureSlider.value;
+        Debug.Log("Publishing sensation data");
+        string message = "Pleasure : " + pleasureSlider.value + ";Intensity : " + intensitySlider.value;
         gameManager.GetComponent<RedisConnection>().publisher.Publish(gameManager.GetComponent<RedisConnection>().redisChannels["feedback"], message);
-    }
-    void intensityValueChanged()
-    {
-        if(!gameManager.GetComponent<RedisConnection>().redis.IsConnected)
-            return;
-        Debug.Log("Intensity value changed");
-        string message = "intensity;" + intensitySlider.value;
-        gameManager.GetComponent<RedisConnection>().publisher.Publish(gameManager.GetComponent<RedisConnection>().redisChannels["feedback"], message);
-    }
-    // Update is called once per frame
-    void Update()
-    {
-
-        
     }
 }

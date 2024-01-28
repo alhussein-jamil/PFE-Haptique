@@ -37,7 +37,7 @@ namespace Franka
         private bool reversed = false;
         public GameObject GameManager;
         private bool calibDataSet = false;
-        private void CalibrateRobot()
+        public void CalibrateRobot()
         {
 
             //unsubscribe from redis
