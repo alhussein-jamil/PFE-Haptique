@@ -1,55 +1,85 @@
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.UI; // Ajoutez cette ligne si vous utilisez l' l ment Text standard
+using UnityEngine.UI;
 
 public class Calibrate : MonoBehaviour
 {
     public Transform RightHand;
     public Transform LeftHand;
-    public GameObject robotRoot;
-    public Text countdownText; // R f rence   l' l ment Text sur le Canvas
+    public Transform CenterEye;
+    public GameObject CountdownToDisable;
+    public Text CountdownText;
+    public Text CalibrationMessage;
+    public bool CalibrateOnStart = false;
+    private bool calibrated = false;
+    private float countdownTimer = 5f;
+
+    void Start()
+    {
+        CalibrationMessage.gameObject.SetActive(false);
+        if (CalibrateOnStart)
+        {
+            StartCalibration();
+        }
+    }
 
     public void CalibratePosition()
     {
-        Vector3 newPosition = new Vector3((RightHand.position.x + LeftHand.position.x) / 2, (RightHand.position.y + LeftHand.position.y) / 2, (RightHand.position.z + LeftHand.position.z) / 2);
-        transform.position = newPosition;
+        transform.position = new Vector3(transform.position.x, (RightHand.position.y + LeftHand.position.y) / 2, transform.position.z);
 
-        double rotationAngle_y = System.Math.Atan2(RightHand.position.z - LeftHand.position.z, RightHand.position.x - LeftHand.position.x);
-        rotationAngle_y *= 180 / System.Math.PI;
-        // double rotationAngle_z = Math.Atan2(RightHand.position.y - LeftHand.position.y, RightHand.position.x - LeftHand.position.x); 
-        // rotationAngle_z *= 180 / Math.PI;
-        // transform.Rotate(0, -(float)rotationAngle_y, 0, Space.Self);
-        transform.RotateAround(transform.position, Vector3.up, -(float)rotationAngle_y);
-        robotRoot.GetComponent<ArticulationBody>().TeleportRoot(robotRoot.transform.position, robotRoot.transform.rotation);
-     
+        double rotationAngleZ = Math.Atan2(RightHand.position.y - LeftHand.position.y, RightHand.position.x - LeftHand.position.x);
+        rotationAngleZ = rotationAngleZ * 180 / Math.PI;
+
+        Quaternion handRotation = Quaternion.Euler(0, 0, (float)rotationAngleZ);
+        Quaternion eyeRotation = Quaternion.Euler(0, CenterEye.rotation.eulerAngles.y, 0);
+        transform.rotation = handRotation * eyeRotation;
     }
 
-    // M thode pour d marrer la coroutine de calibration
     public void StartCalibration()
     {
-        StartCoroutine(CalibrationRoutine());
-    }
-
-    // Coroutine pour attendre 5 secondes avant de calibrer
-    IEnumerator CalibrationRoutine()
-    {
-        float remainingTime = 5f;
-        while (remainingTime > 0f)
+        if (!calibrated)
         {
-
-            countdownText.text = "Calibration in " + Mathf.CeilToInt(remainingTime) + "s";
-            yield return new WaitForSeconds(1f);
-            remainingTime -= 1f;
+            CalibrationMessage.gameObject.SetActive(true);
+            CalibrationMessage.text = "Calibration started.";
+            countdownTimer = 5f;
+            if (CountdownToDisable != null)
+            {
+                CountdownToDisable.SetActive(true);
+            }
         }
-
-        countdownText.text = "";
-        CalibratePosition();
-    }
+    }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
+        if (!calibrated)
+        {
+            if (countdownTimer > 0)
+            {
+                countdownTimer -= Time.deltaTime;
+                int seconds = Mathf.CeilToInt(countdownTimer);
+                CountdownText.text = seconds.ToString();
+            }
+            else
+            {
+                calibrated = true;
+                CalibratePosition();
+                if (CountdownToDisable != null)
+                {
+                    CountdownToDisable.SetActive(false);
+                }
+                CalibrationMessage.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void RestartScript()
+    {
+        // Resetting the state of the script.
+        calibrated = false;
+        countdownTimer = 5f;
+        CalibrationMessage.gameObject.SetActive(false);
+        CalibrateOnStart = true;
+        if (CalibrateOnStart)
         {
             StartCalibration();
         }
