@@ -1,15 +1,18 @@
-using System;
 using UnityEngine;
 using Franka;
 using UnityEngine.UI;
 
 public class RedisState : MonoBehaviour
 {
-    public GameObject EmikaBrush; // Assignez votre GameObject ici
+    public GameObject GameManager; // Assignez votre GameObject ici
     public Text connectionText; // Assignez votre composant TextMeshProUGUI ici
-
+    private RedisConnection redisConnection;
     void Start()
     {
+
+        if (GameManager == null)
+            GameManager = GameObject.Find("GameManager");
+        redisConnection = GameManager.GetComponent<RedisConnection>();
         UpdateConnectionStatus();
     }
 
@@ -20,16 +23,9 @@ public class RedisState : MonoBehaviour
 
     void UpdateConnectionStatus()
     {
-        if (EmikaBrush == null)
-        {
-            Debug.LogError("EmikaBrush GameObject is not assigned in RedisState script");
-            return;
-        }
-
-        RedisConnection redisConnection = EmikaBrush.GetComponent<RedisConnection>();
         if (redisConnection == null)
         {
-            Debug.LogError("RedisConnection component is not found on EmikaBrush GameObject");
+            Debug.LogError("RedisConnection component is not found");
             return;
         }
 
@@ -39,7 +35,14 @@ public class RedisState : MonoBehaviour
             return;
         }
 
-        bool isConnected = redisConnection.doneInit;
+        if (!redisConnection.doneInit)
+        {
+            connectionText.text = "Connecting...";
+            connectionText.color = Color.yellow;
+            return;
+        }
+        
+        bool isConnected = redisConnection.redis.IsConnected;
 
         if (isConnected)
         {

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using StackExchange.Redis;
 using UnityEngine;
 
 namespace Franka
@@ -42,7 +40,7 @@ namespace Franka
             }
             byte[] bytes = RedisConnection.CoordsToLine(encoderValues).ToArray();
 
-            redisConnection.publisher.Publish(redisConnection.robotChannel, bytes);
+            redisConnection.publisher.Publish(redisConnection.redisChannels["sim_encoder_positions"], bytes);
         }
     }
 }
