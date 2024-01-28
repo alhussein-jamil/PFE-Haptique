@@ -19,8 +19,13 @@ parameter_choices = parameter_choices.applymap(str)
 
 parameter_names = list(parameter_choices.columns)
 selected_params = {param: list(set(parameter_choices[param])) for param in parameter_names}
+
 selected_params['SceneType'] = ['robot', 'haptic']
+selected_params['Side'] = ['left', 'right']
+
 parameter_names.append('SceneType')
+parameter_names.append('Side')
+
 # Create a list to store received parameters
 received_params = []
 
