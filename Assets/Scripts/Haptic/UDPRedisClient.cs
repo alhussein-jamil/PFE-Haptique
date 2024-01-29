@@ -1,3 +1,4 @@
+using System.Data.SqlTypes;
 using Franka;
 using UnityEngine;
 
@@ -36,7 +37,10 @@ public class UDPRedisClient : MonoBehaviour
                     UDPManagerRedis.Instance.dataReceived += UDPManagerRedis.Instance.OnUDPMarginQueueReceived;
                 }
                 else
-                UDPManagerRedis.Instance.SendData(message.Message);
+                {
+                    Debug.Log("Sending UDP " + message.Message);
+                UDPManagerRedis.Instance.SendData((byte[])message.Message);
+                }
             });
             
 
