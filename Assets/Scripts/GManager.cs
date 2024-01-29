@@ -11,7 +11,7 @@ public class GManager : MonoBehaviour
     public double[][] robotCalibrationData = null;    
     public int calibrationDataLength = 0;
     public string gameParametersString = "";
-
+    public string mainSceneName = "RobotScene";
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +27,7 @@ public class GManager : MonoBehaviour
         gameParameters["pleasantness"] = "X";
         gameParameters["intensity"] = "X";
         //go to main scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene("main");
+        UnityEngine.SceneManagement.SceneManager.LoadScene(mainSceneName);
         
     }
     string DictToString(Dictionary<string, string> dict)

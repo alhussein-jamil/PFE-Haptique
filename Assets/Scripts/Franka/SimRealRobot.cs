@@ -10,6 +10,8 @@ public class SimRealRobot : MonoBehaviour
     List<Tuple<double, double, double, double, double, double, double>> poss = new List<Tuple<double, double, double, double, double, double, double>>();
 
     public string filePath = "a.pos";
+    public float file_caresse_speed = 0.5f;
+    public float caresse_speed_scale = 1f;
     private RedisConnection redisConnection;
     public GameObject GameManager;
     public float frequency = 1000f; // 1000 Hz
@@ -53,14 +55,18 @@ public class SimRealRobot : MonoBehaviour
     {
         if (redisConnection.doneInit)
         {
-                Tuple<double, double, double, double, double, double, double> pos = poss[idx];
+                int currentIdx = (int)(idx * caresse_speed_scale);
+
+                Tuple<double, double, double, double, double, double, double> pos = poss[currentIdx];
                 double[] posArray = new double[7] { pos.Item1, pos.Item2, pos.Item3, pos.Item4, pos.Item5, pos.Item6, pos.Item7 };
                 byte[] bytes = RedisConnection.CoordsToLine(posArray).ToArray();
                 redisConnection.publisher.Publish(redisConnection.redisChannels["sim_encoder_positions"], bytes);
                 if(_Moving)
                 {
-                    if (idx < poss.Count - 1)
-                    idx ++;
+                    if (currentIdx < poss.Count - 1)
+                    idx += 1;
+                    else
+                    Moving = false;
                 }
 
         }
@@ -75,6 +81,18 @@ public class SimRealRobot : MonoBehaviour
             {
                 idx = 0;
             }
+        }
+        if(redisConnection.redis.IsConnected)
+        {
+            redisConnection.subscriber.Subscribe(redisConnection.redisChannels["caresse"], (channel, message) =>
+            {
+                string line = message.ToString();
+
+                caresse_speed_scale = float.Parse(line) / file_caresse_speed;
+                Debug.Log("Received caresse speed: " + caresse_speed_scale);
+                Moving = true;
+            });
+            
         }
     }
 

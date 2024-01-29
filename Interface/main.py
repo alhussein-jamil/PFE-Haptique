@@ -10,7 +10,7 @@ import pandas as pd
 import datetime  # Import datetime module for timestamp
 
 app = Flask(__name__)
-redis_client = redis.StrictRedis(host='10.245.239.12', port=6379, db=0)
+redis_client = redis.StrictRedis(host='192.168.1.142', port=6379, db=0)
 
 # Read parameter choices from CSV file
 parameter_choices = pd.read_csv('Data_participant_Incongruency.csv', sep=";")
@@ -82,15 +82,22 @@ def update_params():
         # Save received parameters to the list
         received_params.append(updated_params)
 
-        # Save received parameters to a text file
-        save_to_txt(updated_params)
-
     return "Parameters updated successfully"
 
 if __name__ == '__main__':
     # Start the Oculus stream thread
     oculus_thread = Thread(target=oculus_stream)
     oculus_thread.start()
+    pubsub = redis_client.pubsub()
+    pubsub.subscribe("feedback")
+    def listen_and_save():
+        for message in pubsub.listen():
+            if message['type'] == 'message':
+                save_to_txt(message)
 
+    # Create a new thread for listening and saving
+    listen_thread = Thread(target=listen_and_save)
+    listen_thread.daemon = True  # Set the thread as daemon
+    listen_thread.start()
     # Run the Flask web server
     app.run(debug=True)
