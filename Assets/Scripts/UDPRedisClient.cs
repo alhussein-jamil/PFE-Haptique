@@ -22,13 +22,20 @@ public class UDPRedisClient : MonoBehaviour
             var x = redisConnection.subscriber.Subscribe(redisConnection.redisChannels["haptic_udp"]);
 
             x.OnMessage(message => {
+                
                 string msg = message.Message.ToString();
+
                 if(msg == "start")
+                {   
+                    Debug.Log("Starting UDP");
                     UDPManagerRedis.Instance.StartCom();
+                }
                 else if(msg == "bind")
                 {
+                    Debug.Log("Binding UDP");
                     UDPManagerRedis.Instance.dataReceived += UDPManagerRedis.Instance.OnUDPMarginQueueReceived;
                 }
+                
                 UDPManagerRedis.Instance.SendData(message.Message);
             });
             
