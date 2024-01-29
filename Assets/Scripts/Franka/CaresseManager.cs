@@ -60,17 +60,24 @@ namespace Franka
         public GameObject gameManager;
         public bool Subscribe = true;
         public int speedidx = 0;
-        public string csvPath = "Assets/Resources/Data_participant_Incongruency.csv";
+        public string csvPath = "Data_participant_Incongruency.csv";
         public List<Dictionary<string, string>> parsed;
+
+        
         void Start()
         {
 
+            csvPath = "Assets/Resources/"+ csvPath;
+            // parsed[speedidx]["velocite.tactile"]
             gameManager = GameObject.Find("GameManager");
             redisConnection = gameManager.GetComponent<RedisConnection>();
             parsed = CsvParser.ReadCsvToDictionaryList(csvPath);
 
         }
-
+        public string getValue(string key)
+        {
+            return parsed[speedidx][key];
+        }
 
         public void publishCaresse()
         {

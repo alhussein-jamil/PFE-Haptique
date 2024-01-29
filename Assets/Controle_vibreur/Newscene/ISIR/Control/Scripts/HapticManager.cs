@@ -2,10 +2,34 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Text;
 using UnityEngine;
-using System.Runtime.InteropServices; // DLL !!!
 using Stopwatch = System.Diagnostics.Stopwatch;
 using System;
 using static DebugLog;
+using Franka;
+using System.IO;
+
+class RedisUDPTunnel
+{
+	private RedisConnection redisConnection;
+
+
+	public RedisUDPTunnel(RedisConnection redis)
+	{
+		redisConnection = redis;
+	}
+	public void StartCom()
+	{
+		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], "start");
+	}
+	public void SendData(byte[] d)
+	{
+		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], d);
+	}
+    internal void BindHandle()
+    {
+        redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], "bind");
+    }
+}
 
 public class HapticManager : SingletonBehaviour<HapticManager>
 {
@@ -54,6 +78,7 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 
 	[Header("Grip Device Parameters")]
 	public bool autoStartGripDevice = true;
+	public RedisConnection redisConnection;
 	public string gripDeviceName = "GripDevice";
 	public float frequencyGrip = 500f;
 	[Range(1, 255)]
@@ -84,12 +109,9 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 	public const string SFRAME_SPEED = "$V";
 	public const string SFRAME_FORCE = "$F";
 	public const int HEADER_GRIP_SIZE = 2; //2byte for Header
+	private RedisUDPTunnel redisUDPTunnel;
+	public GameObject gameManager;
 
-    // ****************************************************************************************** Windows 32/64
-    [DllImport("kernel32.dll")] static extern int GetCurrentThread();
-    [DllImport("kernel32.dll")] static extern int SetThreadAffinityMask(int hThread, int dwThreadAffinityMask);
-    [DllImport("kernel32.dll")] static extern int GetCurrentProcessorNumber();
-    // ****************************************************************************************** Windows 32/64
     public float getFrequency(e_base_frequency baseF)
     {
 		return baseF == e_base_frequency.VIB_DEVICE_FREQUENCY ? HapticManager.Instance.frequencyVib : HapticManager.Instance.frequencyGrip;
@@ -98,6 +120,7 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 	
     protected override bool Awake()
 	{
+
 		if (base.Awake())
 		{
 			//initialize here
@@ -144,9 +167,13 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 
     // Start is called before the first frame update
     void Start()
-    {
+    {	
+		gameManager = GameObject.Find("GameManager");
+		redisConnection = gameManager.GetComponent<RedisConnection>();
+		
+		redisUDPTunnel = new RedisUDPTunnel(redisConnection);
 		unityFrameID = 0;
-         DebugLog.Instance.Log(this.GetType().ToString(), "Main Cpu used > " + GetCurrentProcessorNumber()); // Just Checking ^^
+        //  DebugLog.Instance.Log(this.GetType().ToString(), "Main Cpu used > " + GetCurrentProcessorNumber()); // Just Checking ^^
 		if(useConfigurationFile)
 		{
 			configure();
@@ -181,8 +208,11 @@ public class HapticManager : SingletonBehaviour<HapticManager>
         {
 			if (autoStartVibDevice)
 			{
-				UDPManager.Instance.StartCom();
-				UDPManager.Instance.dataReceived += OnUDPMarginQueueReceived;
+				// UDPManager.Instance.StartCom();
+				redisUDPTunnel.StartCom();
+
+				// UDPManager.Instance.dataReceived += OnUDPMarginQueueReceived;
+				redisUDPTunnel.BindHandle();
 			}
         }
         else if(comSystem == e_com_system.DLL || comSystem == e_com_system.DLL_FIXED)
@@ -247,9 +277,9 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 		int cpumask = 1 << (5 % System.Environment.ProcessorCount);
 		 DebugLog.Instance.Log(this.GetType().ToString(), "Nb Processors available: " + System.Environment.ProcessorCount);
         // ************************************************************* Windows 32/64
-        SetThreadAffinityMask(GetCurrentThread(), cpumask); // thread=>cpu
-         DebugLog.Instance.Log(this.GetType().ToString(), "Send Thread n� Cpu used > " + GetCurrentProcessorNumber()); // Just Checking 
-        // ************************************************************* Windows 32/64
+        // SetThreadAffinityMask(GetCurrentThread(), cpumask); // thread=>cpu
+        //  DebugLog.Instance.Log(this.GetType().ToString(), "Send Thread n� Cpu used > " + GetCurrentProcessorNumber()); // Just Checking 
+        // // ************************************************************* Windows 32/64
 		frameID = 0;
 		ulong lastUnityFrameID = 0; //Use for security check if unity still runing
 		bool vibIsMinPeriode = getPeriodeVib() < getPeriodeGrip() || hapticGripDevice == null;
@@ -294,8 +324,10 @@ public class HapticManager : SingletonBehaviour<HapticManager>
                 
                 if (comSystem == e_com_system.UDP)
                 {
-                    UDPManager.Instance.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
-                    UDPManager.Instance.SendData(data);
+                    //UDPManager.Instance.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
+					redisUDPTunnel.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
+                    //UDPManager.Instance.SendData(data);
+					redisUDPTunnel.SendData(data);
                 }
                 else
                 {
@@ -494,8 +526,14 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 
 	private void configure()
 	{
+		_configurationFile ="Assets/Resources/" + _configurationFile;
+		// Check if the file exist
+		if (!File.Exists(_configurationFile))
+		{
+			throw new FileNotFoundException($"File not found: {_configurationFile}");
+		}
 		PlayerPrefs.SetString("configurationFile", _configurationFile);
-		config = new ConfigFileJSON("./"+_configurationFile,true);
+		config = new ConfigFileJSON(_configurationFile,true);
 		if (config.Parameters.HasKey("global_setting")  && config.Parameters["global_setting"]["overwrite_data"] != null && config.Parameters["global_setting"]["overwrite_data"].AsBool)
 		{
 			if (config.Parameters["global_setting"]["debug"] != null)
@@ -630,7 +668,6 @@ public class HapticManager : SingletonBehaviour<HapticManager>
                     i++;
                     int value = Utils.ConvertByteToInt(b);
 					correctionTimingUDP = value-100;
-                     DebugLog.Instance.Log(this.GetType().ToString(), "configuration UPD received : " + correctionTimingUDP.ToString());
 					parsingState = 0;
                     break;
             }
