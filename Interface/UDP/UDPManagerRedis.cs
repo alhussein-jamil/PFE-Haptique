@@ -3,8 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using UnityEngine;
-public class UDPManagerRedis : SingletonBehaviour<UDPManagerRedis>
+
+public class UDPManagerRedis 
 {
 
     public const string SFRAME_UDPHEADER_R = "$d";
@@ -21,15 +21,11 @@ public class UDPManagerRedis : SingletonBehaviour<UDPManagerRedis>
     public int portSender = 26000;
     public int portListener = 26001;
 
-    protected override bool Awake()
+    protected bool Awake()
     {
-        if (base.Awake())
-        {
+
             //initialize here
             return true;
-        }
-        else
-            return false;
     }
 
     void Start()
@@ -40,9 +36,7 @@ public class UDPManagerRedis : SingletonBehaviour<UDPManagerRedis>
     //Use to validate the field
     private void OnValidate()
     {
-        if (Application.isPlaying && DebugLog.Instance != null)
-        {
-        }
+ 
     }
 
     void OnApplicationQuit()
@@ -50,7 +44,7 @@ public class UDPManagerRedis : SingletonBehaviour<UDPManagerRedis>
         closeConnetion();
     }
    
-    [ContextMenu("Start Connection UDP")]
+
     public void StartCom()
     {
         if (running) return; //Start only once
@@ -91,13 +85,25 @@ public class UDPManagerRedis : SingletonBehaviour<UDPManagerRedis>
                     break;
                 case 2: // value 
                     i++;
-                    int value = Utils.ConvertByteToInt(b);
+                    int value = ConvertByteToInt(b);
 					correctionTimingUDP = value-100;
 					parsingState = 0;
                     break;
             }
         }
     }
+    	public static int ConvertByteToInt(byte value)
+	{
+		try
+		{
+			return System.Convert.ToInt32(value);
+		}
+		catch (System.OverflowException)
+		{
+			System.Console.WriteLine("The {0} value {1} can't be parse in interger type.", value.GetType().Name, value);
+			return 0;
+		}
+	}
     private void closeConnetion()
     {
         lock (comLock)
@@ -153,7 +159,6 @@ public class UDPManagerRedis : SingletonBehaviour<UDPManagerRedis>
                 if (data != null)
                 {
                     RaiseDataReceived(data);
-                     DebugLog.Instance.Log(this.GetType().ToString(), "Server: " + Utils.ConvertByteArrayToString(data));
                 }
             }
            

@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI; 
-
+using TMPro;
 public class CalibrationChecker : MonoBehaviour
 {   
     public GManager gameManager; 
-    public Text statusText; 
+    // public Text statusText; 
+    public TextMeshProUGUI statusText;
 
     void Start()
     {

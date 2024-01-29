@@ -4,7 +4,6 @@ using System.Text;
 using UnityEngine;
 using Stopwatch = System.Diagnostics.Stopwatch;
 using System;
-using static DebugLog;
 using Franka;
 using System.IO;
 
@@ -24,7 +23,7 @@ class RedisUDPTunnel
 	}
 	public void SendData(byte[] d)
 	{
-		Debug.Log("Sending "+ d[0]);
+
 		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], d);
 	}
     internal void BindHandle()
@@ -47,10 +46,8 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
         DLL,
         DLL_FIXED
     }
-
-    public e_LogLvl debug = e_LogLvl.DEBUG;
-    public e_com_system comSystem= e_com_system.SERIAL;
-    public bool useConfigurationFile = true;
+    public e_com_system comSystem= e_com_system.UDP;
+    public bool useConfigurationFile = false;
     [SerializeField]
 	private string _configurationFile = "globalSetting.json";
 	private ConfigFileJSON config; //Contain the configuration
@@ -137,9 +134,8 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
     {
         sampleNumber = Utils.ToNearestPowerOfTwo(sampleNumber);
         securityDelay = 5000000 * sampleNumber / frequencyVib;
-        if (Application.isPlaying && DebugLog.Instance != null)
+        if (Application.isPlaying)
         {
-            DebugLog.Instance.setDebug(this.GetType().ToString(), debug);
         }
     }
 
@@ -232,7 +228,6 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
     }
     private void PwmWatcher_AlertDetected(object sender, PWMBalanceWatcher.AlertPWMBalanceArgs e)
     {
-        DebugLog.Instance.Log(this.GetType().ToString(), "PWM channel (" +e.channel+") not balanced :"+e.average +" (center:" +e.center+"), device will be disabled", DebugLog.e_LogLvl.WARNING);
         if (e.channel < hapticDevices.Count && hapticDevices[e.channel] != null)
 		{
             hapticDevices[e.channel].Active = false;
@@ -241,14 +236,12 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 
     void OnApplicationQuit()
     {
-         DebugLog.Instance.Log(this.GetType().ToString(), "OnApplicationQuit");
         setGripConst(0);
 
 		if (running)
         {
             running = false;
             t_threadSend.Join();
-             DebugLog.Instance.Log(this.GetType().ToString(), "Stop sending thread"); // Just Checking ^^
         }
         if (comSystem == e_com_system.DLL || comSystem == e_com_system.DLL_FIXED)
         {
@@ -272,23 +265,19 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 		}
 		else
 		{
-            DebugLog.Instance.Log(this.GetType().ToString(), "No device Haptic Grip device defined",DebugLog.e_LogLvl.WARNING);
 		}
 		
 	}
 	private void t_sendMessage()
 	{
 		int cpumask = 1 << (5 % System.Environment.ProcessorCount);
-		 DebugLog.Instance.Log(this.GetType().ToString(), "Nb Processors available: " + System.Environment.ProcessorCount);
         // ************************************************************* Windows 32/64
         // SetThreadAffinityMask(GetCurrentThread(), cpumask); // thread=>cpu
         //  DebugLog.Instance.Log(this.GetType().ToString(), "Send Thread n� Cpu used > " + GetCurrentProcessorNumber()); // Just Checking 
         // // ************************************************************* Windows 32/64
 		frameID = 0;
 		ulong lastUnityFrameID = 0; //Use for security check if unity still runing
-		bool vibIsMinPeriode = getPeriodeVib() < getPeriodeGrip() || hapticGripDevice == null;
-		 DebugLog.Instance.Log(this.GetType().ToString(), "vibIsMinPeriode :" + vibIsMinPeriode + " periode : "+ getPeriodeVib() + " security: " + securityDelay);
-		
+		bool vibIsMinPeriode = getPeriodeVib() < getPeriodeGrip() || hapticGripDevice == null;		
 		Stopwatch swMainThread = Stopwatch.StartNew();
 		Stopwatch swUnitySecurity = Stopwatch.StartNew();
 
@@ -303,7 +292,6 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
             lastUnityFrameID = unityFrameID;
             if (swUnitySecurity.Elapsed.TotalMilliseconds > securityDelay) //Stop thread after a long time without unity frame (prevent lost thread)
             {
-                DebugLog.Instance.Log(this.GetType().ToString(), "Debug security, stoping thread", DebugLog.e_LogLvl.WARNING);
                 running = false;
                 continue;
             }
@@ -345,7 +333,6 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 						if (rep.Length > 0 && rep[rep.Length - 1] >= 0)
 						{
 							correctionTiming = Mathf.Clamp((correctionTiming + rep[rep.Length - 1] - 100), -100, 100);
-							DebugLog.Instance.Log(this.GetType().ToString(), "correctionTiming : " + correctionTiming.ToString());
 						}
 					}
 				}
@@ -432,16 +419,7 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
             pwmWatcher.addframe();
 
         }
-        if (debug != e_LogLvl.NONE)
-        {
-			DebugLog.Instance.Log(this.GetType().ToString(), debugStr);
-			string st = "";
-			foreach(var va in nxtSamples)
-			{
-				st += va.ToString() + '.';
-			}
-            // DebugLog.Instance.Log(this.GetType().ToString(), st);
-        }
+
         if (updateIdFrame) { frameID++; }
 
         return nxtSamples;
@@ -463,7 +441,6 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 			}
 		}
 		
-		DebugLog.Instance.Log(this.GetType().ToString(), debugStr);
 		return nxtSamples;
 	}
     //Create a Frames from byte (add header and split if too big)
@@ -474,7 +451,6 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 		List<byte> tabchar = new List<byte>();
 		if (L > 2058) //Max lenght managed by the STM32
 		{
-            DebugLog.Instance.Log(this.GetType().ToString(), "Value lenght bigger than 2058",DebugLog.e_LogLvl.WARNING);
 		}
 		//depending of the size of data
 		if (L <= MAX_SIZE - HEADER_NOSPLIT_SIZE)
@@ -542,9 +518,6 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 		{
 			if (config.Parameters["global_setting"]["debug"] != null)
 			{
-				string param = config.Parameters["global_setting"]["debug"];
-				debug = Utils.getEnumFromString<e_LogLvl>(param, e_LogLvl.NONE);
-                DebugLog.Instance.setDebug(this.GetType().ToString(), debug);
             }
             if (config.Parameters["global_setting"]["com_system"] != null)
             {
@@ -641,7 +614,6 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 
 	private void parseUDPFrame(byte[] data)
 	{
-         DebugLog.Instance.Log(this.GetType().ToString(), "data : " + Utils.ConvertByteArrayToString(data));
         if (data.Length == 0) return;
 		int parsingState = 0;
 		byte[] header = Encoding.ASCII.GetBytes(SFRAME_UDPHEADER_R);

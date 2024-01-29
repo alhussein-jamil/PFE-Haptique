@@ -298,8 +298,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2059782898}
   - component: {fileID: 2059782897}
-  - component: {fileID: 2059782899}
   - component: {fileID: 2059782900}
+  - component: {fileID: 2059782902}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -384,22 +384,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &2059782899
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2059782896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4db8c3b98ce2e8b4dacc54b2f66085d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debug: 7
-  ip: 127.0.0.1
-  portSender: 26000
-  portListener: 26001
 --- !u!114 &2059782900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,6 +399,21 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   redisConnection: {fileID: 0}
   subscribed: 0
+--- !u!114 &2059782902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059782896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa06e4c9b31960e46ab5a9e812d989f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ip: 127.0.0.1
+  portSender: 26000
+  portListener: 26001
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

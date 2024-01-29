@@ -171,7 +171,7 @@ MonoBehaviour:
   maxVolume: 1
   mixingOperator: 2
   playmodeParameters:
-  - hapticClipPrefab: {fileID: 289195010}
+  - hapticClipPrefab: {fileID: 0}
     hapticClip: {fileID: 0}
     startOnAwake: 0
     playModeType: 1
@@ -1047,6 +1047,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641d0fdeff7364d40aa81b89b0b68ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  csvFile: 
   gameManager: {fileID: 0}
   Subscribe: 1
   speedidx: 0
@@ -1797,7 +1798,7 @@ MonoBehaviour:
   maxVolume: 1
   mixingOperator: 2
   playmodeParameters:
-  - hapticClipPrefab: {fileID: 721914542}
+  - hapticClipPrefab: {fileID: 0}
     hapticClip: {fileID: 0}
     startOnAwake: 0
     playModeType: 1
@@ -2393,7 +2394,7 @@ MonoBehaviour:
   maxVolume: 1
   mixingOperator: 2
   playmodeParameters:
-  - hapticClipPrefab: {fileID: 521638776}
+  - hapticClipPrefab: {fileID: 0}
     hapticClip: {fileID: 0}
     startOnAwake: 0
     playModeType: 1
@@ -2449,78 +2450,6 @@ MonoBehaviour:
   sampleChannel: 2
   sampleRate: 1
   audioFileName: 
---- !u!1 &1769329708
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1769329711}
-  - component: {fileID: 1769329710}
-  - component: {fileID: 1769329709}
-  m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1769329709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769329708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e83cecb4d76a1cd4f81712ae00538518, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  connection_string: 192.168.1.142:6379
-  test_message: gameManager Here
-  channels:
-  - test
-  - encoder_positions
-  - sim_encoder_positions
-  - caresse
-  - virtual_caresse
-  - feedback
-  - game_parameters
-  doneInit: 0
-  requiresRedis: 1
---- !u!114 &1769329710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769329708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8118daec8d5a40744b761f50fb0cac3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  calibrationDataLength: 0
-  gameParametersString: 
-  mainSceneName: RobotScene
---- !u!4 &1769329711
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1769329708}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.47395706, y: -0.49507928, z: 2.0147965}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1772613257
 GameObject:
   m_ObjectHideFlags: 0
@@ -2946,7 +2875,7 @@ MonoBehaviour:
   maxVolume: 1
   mixingOperator: 2
   playmodeParameters:
-  - hapticClipPrefab: {fileID: 1697814309}
+  - hapticClipPrefab: {fileID: 0}
     hapticClip: {fileID: 0}
     startOnAwake: 0
     playModeType: 1
@@ -3001,7 +2930,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration_of_wave: 3
   height_of_curve: 0.025
-  Time_factor: 0.6
+  Time_factor: 0
 --- !u!1001 &2005426368
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3097,7 +3026,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2005426369}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c9d8dc1d319471488dae1bda667a52b, type: 3}
   m_Name: 
@@ -3109,7 +3038,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2005426369}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4db8c3b98ce2e8b4dacc54b2f66085d9, type: 3}
   m_Name: 
@@ -3146,11 +3075,13 @@ MonoBehaviour:
   - {fileID: 1477540577}
   - {fileID: 1137770863}
   autoStartGripDevice: 0
+  redisConnection: {fileID: 0}
   gripDeviceName: GripDevice
   frequencyGrip: 500
   maxSpeed: 191
   maxForce: 255
   hapticGripDevice: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3167,4 +3098,3 @@ SceneRoots:
   - {fileID: 1240713584}
   - {fileID: 1146283440}
   - {fileID: 539571103}
-  - {fileID: 1769329711}

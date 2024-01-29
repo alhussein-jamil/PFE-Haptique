@@ -104,6 +104,9 @@ namespace Franka
         {
             if (!redisConnection.doneInit)
                 return;
+            if (speedidx == 0)
+                speedidx = parsed.Count - 1;
+            else
             speedidx = (speedidx - 1) % parsed.Count;
             setValues();
         }

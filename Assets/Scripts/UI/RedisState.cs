@@ -1,17 +1,16 @@
 using UnityEngine;
 using Franka;
-using UnityEngine.UI;
-
+using TMPro;
 public class RedisState : MonoBehaviour
 {
     public GameObject GameManager; // Assignez votre GameObject ici
-    public Text connectionText; // Assignez votre composant TextMeshProUGUI ici
+    public TextMeshProUGUI connectionText; // Assignez votre composant TextMeshProUGUI ici
     private RedisConnection redisConnection;
     void Start()
     {
 
-        if (GameManager == null)
-            GameManager = GameObject.Find("GameManager");
+
+        GameManager = GameObject.Find("GameManager");
         redisConnection = GameManager.GetComponent<RedisConnection>();
         UpdateConnectionStatus();
     }

@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -29,8 +31,10 @@ public class UIManager : MonoBehaviour
     {
         ExperienceUI.SetActive(true);
     }
-    public void HideExperienceUI()
+    public async void HideExperienceUI()
     {
+        // wait for 0.5s
+        await Task.Delay(500);
         HideIndicatorsUI();
         ExperienceUI.SetActive(false);
         ShowManagementUI();
@@ -40,8 +44,10 @@ public class UIManager : MonoBehaviour
         FeedBackUI.SetActive(true);
 
     }
-    public void HideFeedBackUI()
+    public async Task HideFeedBackUIAsync()
     {
+        // wait for 0.5s
+        await Task.Delay(500);
         FeedBackUI.SetActive(false);
         ShowExperienceUI();
 
@@ -50,8 +56,10 @@ public class UIManager : MonoBehaviour
     {
         ManagementUI.SetActive(true);
     }
-    public void HideManagementUI()
+    public async Task HideManagementUI()
     {
+                // wait for 0.5s
+        await Task.Delay(500);
         ManagementUI.SetActive(false);
         ShowFeedBackUI();
     }
@@ -91,7 +99,7 @@ public class UIManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.E))
             HideExperienceUI();
         if(Input.GetKeyDown(KeyCode.F))
-            HideFeedBackUI();
+            HideFeedBackUIAsync();
         if(Input.GetKeyDown(KeyCode.M))
             HideManagementUI();
 

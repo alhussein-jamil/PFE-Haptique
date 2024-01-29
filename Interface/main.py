@@ -1,16 +1,20 @@
-import cv2
+
 import redis
 from flask import Flask, render_template, request
 from threading import Thread
-import requests
-import numpy as np
-from PIL import Image
-from io import BytesIO
 import pandas as pd
 import datetime  # Import datetime module for timestamp
+import os  # Import os module for creating directories
+import subprocess
+import webbrowser
 
+# Open the webpage in the default web browser
+webbrowser.open('http://127.0.0.1:5000/')
+
+#run the c# client using dotnet run
+subprocess.Popen(["dotnet", "run", "--project", "./UDP/"])
 app = Flask(__name__)
-redis_client = redis.StrictRedis(host='192.168.1.142', port=6379, db=0)
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 # Read parameter choices from CSV file
 parameter_choices = pd.read_csv('Data_participant_Incongruency.csv', sep=";")
@@ -28,27 +32,21 @@ parameter_names.append('Side')
 
 # Create a list to store received parameters
 received_params = []
-
-def oculus_stream():
-    while True:
-        try:
-            # Fetch the Oculus stream
-            response = requests.get('https://oculus.com/casting')
-            if response.status_code == 200:
-                # Extract the image from the response
-                img = Image.open(BytesIO(response.content))
-                frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-
-                # Display the frame
-                cv2.imshow('Oculus Stream', frame)
-                cv2.waitKey(1)
-        except Exception as e:
-            print(f"Error fetching Oculus stream: {e}")
+# Add this route to your Flask app
+@app.route('/send_to_redis', methods=['POST'])
+def send_to_redis():
+    value_to_send = request.form.get('value')
+    if value_to_send:
+        redis_client.publish('caresse', value_to_send)
+        return f"Value '{value_to_send}' sent to Redis channel 'caresse'"
+    else:
+        return "No value provided to send to Redis channel 'caresse'"
 
 def save_to_txt(param_data):
     # Save received parameters to a text file with timestamp
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"received_params_{timestamp}.txt"
+    os.makedirs("received_params", exist_ok=True)
+    filename =  f"received_params/{timestamp}.txt"
 
     with open(filename, 'w') as file:
         for param, value in param_data.items():
@@ -57,6 +55,7 @@ def save_to_txt(param_data):
 @app.route('/')
 def index():
     return render_template('index_ajax.html', parameters=selected_params)
+
 
 @app.route('/update_params', methods=['POST'])
 def update_params():
@@ -85,9 +84,6 @@ def update_params():
     return "Parameters updated successfully"
 
 if __name__ == '__main__':
-    # Start the Oculus stream thread
-    oculus_thread = Thread(target=oculus_stream)
-    oculus_thread.start()
     pubsub = redis_client.pubsub()
     pubsub.subscribe("feedback")
     def listen_and_save():
@@ -95,7 +91,7 @@ if __name__ == '__main__':
             if message['type'] == 'message':
                 save_to_txt(message)
 
-    # Create a new thread for listening and saving
+    # Create a new thread for listening and DebugLog saving
     listen_thread = Thread(target=listen_and_save)
     listen_thread.daemon = True  # Set the thread as daemon
     listen_thread.start()

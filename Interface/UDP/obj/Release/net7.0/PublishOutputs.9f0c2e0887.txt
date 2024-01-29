@@ -1,0 +1,9 @@
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\UDP.exe
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\UDP.dll
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\UDP.deps.json
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\UDP.runtimeconfig.json
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\UDP.pdb
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\Microsoft.Extensions.Logging.Abstractions.dll
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\Pipelines.Sockets.Unofficial.dll
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\StackExchange.Redis.dll
+E:\PFE-Haptique\UDP\bin\Release\net7.0\publish\System.IO.Pipelines.dll

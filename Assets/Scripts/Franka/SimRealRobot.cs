@@ -56,6 +56,11 @@ public class SimRealRobot : MonoBehaviour
         if (redisConnection.doneInit)
         {
                 int currentIdx = (int)(idx * caresse_speed_scale);
+                if (currentIdx >= poss.Count)
+                {
+                    Moving = false;
+                    return;
+                }   
 
                 Tuple<double, double, double, double, double, double, double> pos = poss[currentIdx];
                 double[] posArray = new double[7] { pos.Item1, pos.Item2, pos.Item3, pos.Item4, pos.Item5, pos.Item6, pos.Item7 };
