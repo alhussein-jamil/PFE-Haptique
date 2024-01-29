@@ -35,7 +35,7 @@ public class UDPRedisClient : MonoBehaviour
                     Debug.Log("Binding UDP");
                     UDPManagerRedis.Instance.dataReceived += UDPManagerRedis.Instance.OnUDPMarginQueueReceived;
                 }
-                
+                else
                 UDPManagerRedis.Instance.SendData(message.Message);
             });
             

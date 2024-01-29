@@ -19,10 +19,12 @@ class RedisUDPTunnel
 	}
 	public void StartCom()
 	{
+
 		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], "start");
 	}
 	public void SendData(byte[] d)
 	{
+		Debug.Log("Sending "+ d[0]);
 		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], d);
 	}
     internal void BindHandle()
