@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Brush_Movement : MonoBehaviour{
+public class Arrow_Movement : MonoBehaviour{
 
     private Vector3 startPoint; 
     private Vector3 First_vibror; 
@@ -29,7 +29,7 @@ public class Brush_Movement : MonoBehaviour{
     private void Update()
     {
         // if the button on the Unity scrin is clicked then move toward the finish position
-
+        
             if(First_movement){
             timer += Time.deltaTime;
 
@@ -82,11 +82,11 @@ public class Brush_Movement : MonoBehaviour{
             
         }
 
-        //when the brush is in the correct place turned of the movement and reset the timer 
+        //when the Arrow is in the correct place turned of the movement and reset the timer 
         
     
 
-    public void StartMovement_Brush(Vector3 st,Vector3 fv,Vector3 lv,Vector3 ed)
+    public void StartMovement_Arrow(Vector3 st,Vector3 fv,Vector3 lv,Vector3 ed)
     {
         startPoint = st;
         First_vibror = fv;
@@ -96,8 +96,8 @@ public class Brush_Movement : MonoBehaviour{
         First_movement = true;
     }
 
-    // the information about the speed of the brush movement is read from the .csv file during the experiment
-    public void UpdateSpeed_Brush(float visualSpeed)
+    // the information about the speed of the Arrow movement is read from the .csv file during the experiment
+    public void UpdateSpeed_Arrow(float visualSpeed)
     {
         duration_of_wave = 9f/(visualSpeed*Time_factor);
 
