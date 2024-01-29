@@ -24,12 +24,12 @@ public class UDPRedisClient : MonoBehaviour
             x.OnMessage(message => {
                 string msg = message.Message.ToString();
                 if(msg == "start")
-                    UDPManager.Instance.StartCom();
+                    UDPManagerRedis.Instance.StartCom();
                 else if(msg == "bind")
                 {
-                    UDPManager.Instance.dataReceived += UDPManager.Instance.OnUDPMarginQueueReceived;
+                    UDPManagerRedis.Instance.dataReceived += UDPManagerRedis.Instance.OnUDPMarginQueueReceived;
                 }
-                UDPManager.Instance.SendData(message.Message);
+                UDPManagerRedis.Instance.SendData(message.Message);
             });
             
 
