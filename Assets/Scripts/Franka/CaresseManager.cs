@@ -5,20 +5,13 @@ using UnityEngine;
 
 class CsvParser
 {
-    public static List<Dictionary<string, string>> ReadCsvToDictionaryList(string csvPath)
-    {
+    public static List<Dictionary<string, string>> ReadCsvToDictionaryList(string csvFile)
+    {   
 
         List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
 
-        // Check if the file exists
-        if (!File.Exists(csvPath))
-        {
-            throw new FileNotFoundException($"File not found: {csvPath}");
-        }
-
         // Read all lines from the CSV file
-        string[] lines = File.ReadAllLines(csvPath);
-
+        string[] lines = csvFile.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
         // Check if the file has at least one line
         if (lines.Length == 0)
         {
@@ -26,7 +19,7 @@ class CsvParser
         }
         // Get the header row (first row)
         string[] headers = lines[0].Split(';');
-
+        
         // Iterate through the remaining rows and create dictionaries
         for (int i = 1; i < lines.Length; i++)
         {
@@ -56,6 +49,7 @@ namespace Franka
 
     public class CaresseManager : MonoBehaviour
     {
+        public string csvFile;
         private RedisConnection redisConnection;
         public GameObject gameManager;
         public bool Subscribe = true;
@@ -67,11 +61,11 @@ namespace Franka
         void Start()
         {
 
-            csvPath = "Assets/Resources/"+ csvPath;
-            // parsed[speedidx]["velocite.tactile"]
+            csvFile = Resources.Load<TextAsset>("Data_participant_Incongruency").text;
+
             gameManager = GameObject.Find("GameManager");
             redisConnection = gameManager.GetComponent<RedisConnection>();
-            parsed = CsvParser.ReadCsvToDictionaryList(csvPath);
+            parsed = CsvParser.ReadCsvToDictionaryList(csvFile);
 
         }
         public string getValue(string key)

@@ -2,12 +2,36 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Text;
 using UnityEngine;
-using System.Runtime.InteropServices; // DLL !!!
 using Stopwatch = System.Diagnostics.Stopwatch;
 using System;
 using static DebugLog;
+using Franka;
+using System.IO;
 
-public class HapticManager : SingletonBehaviour<HapticManager>
+class RedisUDPTunnel
+{
+	private RedisConnection redisConnection;
+
+
+	public RedisUDPTunnel(RedisConnection redis)
+	{
+		redisConnection = redis;
+	}
+	public void StartCom()
+	{
+		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], "start");
+	}
+	public void SendData(byte[] d)
+	{
+		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], d);
+	}
+    internal void BindHandle()
+    {
+        redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], "bind");
+    }
+}
+
+public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 {
 	public enum e_base_frequency
 	{
@@ -54,6 +78,7 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 
 	[Header("Grip Device Parameters")]
 	public bool autoStartGripDevice = true;
+	public RedisConnection redisConnection;
 	public string gripDeviceName = "GripDevice";
 	public float frequencyGrip = 500f;
 	[Range(1, 255)]
@@ -84,12 +109,9 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 	public const string SFRAME_SPEED = "$V";
 	public const string SFRAME_FORCE = "$F";
 	public const int HEADER_GRIP_SIZE = 2; //2byte for Header
+	private RedisUDPTunnel redisUDPTunnel;
+	public GameObject gameManager;
 
-    // ****************************************************************************************** Windows 32/64
-    [DllImport("kernel32.dll")] static extern int GetCurrentThread();
-    [DllImport("kernel32.dll")] static extern int SetThreadAffinityMask(int hThread, int dwThreadAffinityMask);
-    [DllImport("kernel32.dll")] static extern int GetCurrentProcessorNumber();
-    // ****************************************************************************************** Windows 32/64
     public float getFrequency(e_base_frequency baseF)
     {
 		return baseF == e_base_frequency.VIB_DEVICE_FREQUENCY ? HapticManager.Instance.frequencyVib : HapticManager.Instance.frequencyGrip;
@@ -98,6 +120,7 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 	
     protected override bool Awake()
 	{
+
 		if (base.Awake())
 		{
 			//initialize here
@@ -144,9 +167,13 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 
     // Start is called before the first frame update
     void Start()
-    {
+    {	
+		gameManager = GameObject.Find("GameManager");
+		redisConnection = gameManager.GetComponent<RedisConnection>();
+		
+		redisUDPTunnel = new RedisUDPTunnel(redisConnection);
 		unityFrameID = 0;
-         DebugLog.Instance.Log(this.GetType().ToString(), "Main Cpu used > " + GetCurrentProcessorNumber()); // Just Checking ^^
+        //  DebugLog.Instance.Log(this.GetType().ToString(), "Main Cpu used > " + GetCurrentProcessorNumber()); // Just Checking ^^
 		if(useConfigurationFile)
 		{
 			configure();
@@ -157,16 +184,18 @@ public class HapticManager : SingletonBehaviour<HapticManager>
         pwmWatcher.AlertDetected += PwmWatcher_AlertDetected;
 		if(comSystem != e_com_system.DLL_FIXED)
         {
-			t_threadSend = new Thread(t_sendMessage);
-			// According with the Official documentation : https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity8.html
-			// ' The priority for the main thread and graphics thread are both ThreadPriority.Normal.
-			//   Any threads with higher priority preempt the main/graphics threads and cause framerate hiccups,
-			//   whereas threads with lower priority do not. If threads have an equivalent priority to the main thread, the CPU attempts to give equal time to the threads,
-			//   which generally results in framerate stuttering if multiple background threads are performing heavy operations, such as AssetBundle decompression.'
-			// So, better use a lowest Thread Priority
-			t_threadSend.Priority = System.Threading.ThreadPriority.Normal; //// Lowest, BelowNormal, Normal, AboveNormal, Highest
-			t_threadSend.IsBackground = true;
-			t_threadSend.Start();
+            t_threadSend = new Thread(t_sendMessage)
+            {
+                // According with the Official documentation : https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity8.html
+                // ' The priority for the main thread and graphics thread are both ThreadPriority.Normal.
+                //   Any threads with higher priority preempt the main/graphics threads and cause framerate hiccups,
+                //   whereas threads with lower priority do not. If threads have an equivalent priority to the main thread, the CPU attempts to give equal time to the threads,
+                //   which generally results in framerate stuttering if multiple background threads are performing heavy operations, such as AssetBundle decompression.'
+                // So, better use a lowest Thread Priority
+                Priority = System.Threading.ThreadPriority.Normal, //// Lowest, BelowNormal, Normal, AboveNormal, Highest
+                IsBackground = true
+            };
+            t_threadSend.Start();
 			running = true;
 		}
 
@@ -181,8 +210,11 @@ public class HapticManager : SingletonBehaviour<HapticManager>
         {
 			if (autoStartVibDevice)
 			{
-				UDPManager.Instance.StartCom();
-				UDPManager.Instance.dataReceived += OnUDPMarginQueueReceived;
+				// UDPManager.Instance.StartCom();
+				redisUDPTunnel.StartCom();
+
+				// UDPManager.Instance.dataReceived += OnUDPMarginQueueReceived;
+				redisUDPTunnel.BindHandle();
 			}
         }
         else if(comSystem == e_com_system.DLL || comSystem == e_com_system.DLL_FIXED)
@@ -247,9 +279,9 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 		int cpumask = 1 << (5 % System.Environment.ProcessorCount);
 		 DebugLog.Instance.Log(this.GetType().ToString(), "Nb Processors available: " + System.Environment.ProcessorCount);
         // ************************************************************* Windows 32/64
-        SetThreadAffinityMask(GetCurrentThread(), cpumask); // thread=>cpu
-         DebugLog.Instance.Log(this.GetType().ToString(), "Send Thread n� Cpu used > " + GetCurrentProcessorNumber()); // Just Checking 
-        // ************************************************************* Windows 32/64
+        // SetThreadAffinityMask(GetCurrentThread(), cpumask); // thread=>cpu
+        //  DebugLog.Instance.Log(this.GetType().ToString(), "Send Thread n� Cpu used > " + GetCurrentProcessorNumber()); // Just Checking 
+        // // ************************************************************* Windows 32/64
 		frameID = 0;
 		ulong lastUnityFrameID = 0; //Use for security check if unity still runing
 		bool vibIsMinPeriode = getPeriodeVib() < getPeriodeGrip() || hapticGripDevice == null;
@@ -294,8 +326,10 @@ public class HapticManager : SingletonBehaviour<HapticManager>
                 
                 if (comSystem == e_com_system.UDP)
                 {
-                    UDPManager.Instance.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
-                    UDPManager.Instance.SendData(data);
+                    //UDPManager.Instance.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
+					redisUDPTunnel.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
+                    //UDPManager.Instance.SendData(data);
+					redisUDPTunnel.SendData(data);
                 }
                 else
                 {
@@ -494,8 +528,14 @@ public class HapticManager : SingletonBehaviour<HapticManager>
 
 	private void configure()
 	{
+		_configurationFile ="Assets/Resources/" + _configurationFile;
+		// Check if the file exist
+		if (!File.Exists(_configurationFile))
+		{
+			throw new FileNotFoundException($"File not found: {_configurationFile}");
+		}
 		PlayerPrefs.SetString("configurationFile", _configurationFile);
-		config = new ConfigFileJSON("./"+_configurationFile,true);
+		config = new ConfigFileJSON(_configurationFile,true);
 		if (config.Parameters.HasKey("global_setting")  && config.Parameters["global_setting"]["overwrite_data"] != null && config.Parameters["global_setting"]["overwrite_data"].AsBool)
 		{
 			if (config.Parameters["global_setting"]["debug"] != null)
@@ -630,113 +670,10 @@ public class HapticManager : SingletonBehaviour<HapticManager>
                     i++;
                     int value = Utils.ConvertByteToInt(b);
 					correctionTimingUDP = value-100;
-                     DebugLog.Instance.Log(this.GetType().ToString(), "configuration UPD received : " + correctionTimingUDP.ToString());
 					parsingState = 0;
                     break;
             }
         }
     }
-
-}
-class PWMBalanceWatcher
-{
-	int m_PWMCenter = 0;
-	int m_maxPWM = 511;
-	int[] sumPWM = { };
-	int[] alertingChannels = { };
-    int m_count = 0;
-	float m_tolerance = 0;
-	int m_countBeforeAlert = 500; //alert when the PWM average not around zero for more than : minCountBeforeAlert*1/Fe
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="MaxPWM">value max of PWM</param>
-    /// <param name="nbChannel">number of Channel</param>
-    /// <param name="minCountAlert">number of value before alert</param>
-    /// <param name="tolerance">tolerence around the zero</param>
-    public PWMBalanceWatcher(int maxPWM, int nbChannel, int countBeforeAlert = 5000,  int tolerance = -1)
-	{
-		m_maxPWM = maxPWM;
-        m_tolerance = tolerance;
-        if (m_tolerance < 0) m_tolerance = m_maxPWM * 0.01f; //Default tolerence 1% of MaxPWM
-		m_PWMCenter = (m_maxPWM + 1) / 2;
-        sumPWM = new int[nbChannel];
-        alertingChannels = new int[nbChannel];
-        m_countBeforeAlert = countBeforeAlert;
-        reset();
-    }
-
-	public void addValue(int channel, float value)
-	{
-		if(channel>= 0 && channel < sumPWM.Length)
-		{
-            sumPWM[channel] += Utils.floatToPWM(value, m_maxPWM) ;
-        }
-	}
-
-	public void reset() {
-        for (int i = 0; i < sumPWM.Length; i++)
-        {
-            sumPWM[i] = 0;
-            alertingChannels[i] = 0;
-        }
-        m_count = 0;
-    }
-
-	public void addframe()
-	{
-        m_count++;
-		checkBalance();
-
-    }
-
-	private void checkBalance()
-	{
-        for (int i = 0; i < sumPWM.Length; i++)
-        {
-			float avg = m_count == 0 ? m_PWMCenter : (sumPWM[i] / m_count);
-            float dist = Mathf.Abs(avg - m_PWMCenter);
-            if (dist > m_tolerance)
-			{
-				alertingChannels[i]++;
-				if(alertingChannels[i] > m_countBeforeAlert)
-				{
-                    RaiseAlert(i, avg);
-                }
-			}
-			else { alertingChannels[i] = 0; }
-        }
-    }
-    // Declare the delegate design to handle alert detection.
-    public delegate void AlertPWMBalanceHandler(object sender, AlertPWMBalanceArgs e);
-
-    /// <summary>
-    /// Occurs when new alert is detected.
-    /// </summary>
-    public event AlertPWMBalanceHandler AlertDetected;
-
-    /// <summary>
-    /// raise the alert event
-    /// </summary>
-    private void RaiseAlert(int channelId, float avg)
-    {
-        // Raise the event by using the () operator.
-        if (AlertDetected != null)
-            AlertDetected(this, new AlertPWMBalanceArgs(channelId, avg, m_PWMCenter));
-    }
-
-    /// <summary>
-    /// <para>Arguments dispatched with NetworkManager events.</para>
-    /// </summary>
-    public class AlertPWMBalanceArgs
-    {
-        public int channel { get; private set; } 
-        public float average { get; private set; }    
-        public float center { get; private set; }
-        public AlertPWMBalanceArgs(int channelId, float avg, float ctr) { channel = channelId; average = avg; center = ctr; }
-    }
-
-
 
 }
