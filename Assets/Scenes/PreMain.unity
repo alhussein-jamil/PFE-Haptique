@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83cecb4d76a1cd4f81712ae00538518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connection_string: localhost:6379
+  connection_string: 192.168.1.142:6379
   test_message: gameManager Here
   channels:
   - test
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   calibrationDataLength: 0
   gameParametersString: 
-  mainSceneName: main
+  mainSceneName: Main Menu
 --- !u!4 &290293692
 Transform:
   m_ObjectHideFlags: 0
