@@ -35,16 +35,16 @@ namespace Franka
         public double stiffness = 100000;
         public double damping = 10000;
         private bool reversed = false;
-        public GameObject GameManager;
+        public GameObject gameManager;
         private bool calibDataSet = false;
         public void CalibrateRobot()
         {
-
+            
             //unsubscribe from redis
             redisConnection.subscriber.UnsubscribeAll();
             Debug.Log("Resetting robot");
             CancelInvoke();
-            GameManager.GetComponent<GManager>().robotCalibrationData = null;
+            gameManager.GetComponent<GManager>().robotCalibrationData = null;
             calibrationDone = false;
             subscriptionDone = false;
             firstMove = false;
@@ -60,18 +60,18 @@ namespace Franka
         }
         void Start()
         {
-            if (GameManager == null)
-                GameManager = GameObject.Find("GameManager");
+            if (gameManager == null)
+                gameManager = GameObject.Find("GameManager");
 
-            redisConnection = GameManager.GetComponent<RedisConnection>();
+            redisConnection = gameManager.GetComponent<RedisConnection>();
 
             messageList = new List<double[]>();
             encoderValues = new double[links.Length];
             _speedScale = Math.Abs(speedScale);
             // check for calibration data existence in the game manager
-            if (GameManager.GetComponent<GManager>().robotCalibrationData != null)
+            if (gameManager.GetComponent<GManager>().robotCalibrationData != null)
             {
-                messages = GameManager.GetComponent<GManager>().robotCalibrationData;
+                messages = gameManager.GetComponent<GManager>().robotCalibrationData;
                 calibrationDone = true;
                 idx = messages.Length;
             }
@@ -149,7 +149,7 @@ namespace Franka
             {
                 if (!calibDataSet)
                 {
-                    GameManager.GetComponent<GManager>().setCalibrationData(messages);
+                    gameManager.GetComponent<GManager>().setCalibrationData(messages);
                     calibDataSet = true;
                 }
             }

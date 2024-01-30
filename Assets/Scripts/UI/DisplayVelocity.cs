@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI; 
-
+using TMPro;
 public class DisplayVelocity : MonoBehaviour
 {
     public GManager gameManager; 
-    public Text velocityText; 
+    public TextMeshProUGUI velocityText; 
 
 
     void Start()
@@ -23,12 +23,12 @@ public class DisplayVelocity : MonoBehaviour
             if (float.TryParse(velocityStr, out float velocity))
             {
               
-                velocityText.text = "Vélocité : " + velocity.ToString();
+                velocityText.text = "Caresse Speed : " + velocity.ToString();
             }
             else
             {
                 
-                velocityText.text = "Erreur de conversion";
+                velocityText.text = "Conversion Error";
             }
         }
     }

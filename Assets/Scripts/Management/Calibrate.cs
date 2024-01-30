@@ -3,15 +3,13 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI; // Ajoutez cette ligne si vous utilisez l' l ment Text standard
-
+using TMPro;
 public class Calibrate : MonoBehaviour
 {
     public Transform RightHand;
     public Transform LeftHand;
     public GameObject robotRoot;
-    public Text countdownText; // R f rence   l' l ment Text sur le Canvas
-
-
+    public TextMeshProUGUI countdownText;
 
 
     public Vector3 initPosition;
@@ -57,7 +55,7 @@ public class Calibrate : MonoBehaviour
         while (remainingTime > 0f)
         {
 
-            countdownText.text = "Calibration in " + Mathf.CeilToInt(remainingTime) + "s";
+            countdownText.text = "Calibration in \n" + Mathf.CeilToInt(remainingTime) + "s";
             yield return new WaitForSeconds(1f);
             remainingTime -= 1f;
         }

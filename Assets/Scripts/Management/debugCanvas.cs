@@ -21,7 +21,9 @@ public class debugCanvas : MonoBehaviour
     {
         if (type == LogType.Exception)
         {
-            logText.text = logString;
+            logText.text = logString + "\r\n";
+            // add the exception details to the logText 
+            logText.text += stackTrace + "\r\n";
             //Or Append the log to the old one
             //logText.text += logString + "\r\n";
         }

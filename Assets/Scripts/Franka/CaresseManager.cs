@@ -78,6 +78,7 @@ namespace Franka
             if (!redisConnection.doneInit)
                 return;
             redisConnection.publisher.Publish(redisConnection.redisChannels["caresse"], gameManager.GetComponent<GManager>().gameParameters["velocite.tactile"]);
+            redisConnection.publisher.Publish(redisConnection.redisChannels["caresse_haptic"], gameManager.GetComponent<GManager>().gameParameters["velocite.tactile"]);
 
         }
 

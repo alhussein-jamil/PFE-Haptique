@@ -31,10 +31,8 @@ public class UIManager : MonoBehaviour
     {
         ExperienceUI.SetActive(true);
     }
-    public async void HideExperienceUI()
+    public void HideExperienceUI()
     {
-        // wait for 0.5s
-        await Task.Delay(500);
         HideIndicatorsUI();
         ExperienceUI.SetActive(false);
         ShowManagementUI();
@@ -44,10 +42,8 @@ public class UIManager : MonoBehaviour
         FeedBackUI.SetActive(true);
 
     }
-    public async Task HideFeedBackUIAsync()
+    public void HideFeedBackUI()
     {
-        // wait for 0.5s
-        await Task.Delay(500);
         FeedBackUI.SetActive(false);
         ShowExperienceUI();
 
@@ -56,10 +52,8 @@ public class UIManager : MonoBehaviour
     {
         ManagementUI.SetActive(true);
     }
-    public async Task HideManagementUI()
+    public void HideManagementUI()
     {
-                // wait for 0.5s
-        await Task.Delay(500);
         ManagementUI.SetActive(false);
         ShowFeedBackUI();
     }
@@ -99,7 +93,7 @@ public class UIManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.E))
             HideExperienceUI();
         if(Input.GetKeyDown(KeyCode.F))
-            HideFeedBackUIAsync();
+            HideFeedBackUI();
         if(Input.GetKeyDown(KeyCode.M))
             HideManagementUI();
 
