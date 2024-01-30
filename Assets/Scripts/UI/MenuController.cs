@@ -4,9 +4,11 @@ using Franka;
 
 public class MenuController : MonoBehaviour
 {
+    public string sceneName = "RobotScene";
     public void PlayGame()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("RobotScene");
+        
+        SceneManager.LoadScene(sceneName);
     }
 
     public void QuitGame()

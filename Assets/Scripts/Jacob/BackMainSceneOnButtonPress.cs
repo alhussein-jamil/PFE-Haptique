@@ -7,7 +7,7 @@ public class BackMainSceneOnButtonPress : MonoBehaviour
 {
     public void BackMainScene()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("main");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
     }
     void Update()
     {
