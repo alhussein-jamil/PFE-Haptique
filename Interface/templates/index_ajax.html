@@ -13,11 +13,24 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             height: 100vh;
         }
-    
+        
+        .logo-container {
+            width: 100%; /* Utilisez toute la largeur */
+            display: flex;
+            justify-content: center; /* Centre horizontalement */
+            margin-top: 20px; /* Ajouter de l'espace autour du logo */
+        }
+
+        .logo-container img {
+            max-width: 10%; /* Augmenter la taille maximale du logo */
+            height: auto;
+        }
+
         form {
             background-color: #fff;
             border-radius: 10px;
@@ -27,12 +40,12 @@
             width: 100%;
             text-align: center;
         }
-    
+
         label {
             color: #333;
             font-weight: bold;
         }
-    
+
         select {
             width: 100%;
             padding: 8px;
@@ -41,7 +54,7 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
-    
+
         button {
             background-color: #4CAF50;
             color: white;
@@ -52,11 +65,11 @@
             font-size: 16px;
             transition: background-color 0.3s;
         }
-    
+
         button:hover {
             background-color: #45a049;
         }
-    
+
         #sendToRedisButton {
             background-color: #3498db;
             color: white;
@@ -68,7 +81,7 @@
             margin-top: 10px;
             transition: background-color 0.3s;
         }
-    
+
         #sendToRedisButton:hover {
             background-color: #2980b9;
         }
@@ -114,8 +127,12 @@
         });
     </script>
 </head>
-<body>
+<body>  
+    <div class="logo-container">
+        <img src="https://www.isir.upmc.fr/wp-content/themes/isir/dist/images/logo-color.png" alt="Logo">
+    </div>
     <form method="post">
+        <!-- Replace this section with your form fields and buttons -->
         {% for param in parameters.keys() %}
             <label for="{{ param }}">{{ param }}:</label>
             <select name="{{ param }}" id="{{ param }}">
