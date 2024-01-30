@@ -13,16 +13,19 @@ public class SimRealRobot : MonoBehaviour
     public float file_caresse_speed = 0.5f;
     public float caresse_speed_scale = 1f;
     private RedisConnection redisConnection;
-    public GameObject GameManager;
+    private GameObject gameManager;
     public float frequency = 1000f; // 1000 Hz
     public int idx = 0;
     public bool Moving = false;
     private bool _Moving = false;
+    private bool subscribed;
+    
     private void Start()
     {
-        if (GameManager == null)
-                GameManager = GameObject.Find("GameManager");
-        redisConnection = GameManager.GetComponent<RedisConnection>();
+        gameManager = this.gameObject;
+        if (gameManager == null)
+                gameManager = GameObject.Find("gameManager");
+        redisConnection = gameManager.GetComponent<RedisConnection>();
         _Moving = Moving;
         ReadData();
         // Start invoking the method with the specified interval
@@ -50,6 +53,19 @@ public class SimRealRobot : MonoBehaviour
                     pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6]));
             }
         }
+    }
+
+    private void SubscribeToCaresse(){
+             redisConnection.subscriber.Subscribe(redisConnection.redisChannels["caresse"], (channel, message) =>
+            {
+                Moving = false;
+                //wait for 1 second
+                System.Threading.Thread.Sleep(150);
+                string line = message.ToString();
+                caresse_speed_scale = float.Parse(line) / file_caresse_speed;
+                Debug.Log("Received caresse speed: " + caresse_speed_scale);
+                Moving = true;
+            });
     }
     private void PublishData()
     {
@@ -86,17 +102,16 @@ public class SimRealRobot : MonoBehaviour
             {
                 idx = 0;
             }
+
         }
         if(redisConnection.redis.IsConnected)
         {
-            redisConnection.subscriber.Subscribe(redisConnection.redisChannels["caresse"], (channel, message) =>
+            if (!subscribed)
             {
-                string line = message.ToString();
+                SubscribeToCaresse();
+                subscribed = true;
+            }
 
-                caresse_speed_scale = float.Parse(line) / file_caresse_speed;
-                Debug.Log("Received caresse speed: " + caresse_speed_scale);
-                Moving = true;
-            });
             
         }
     }

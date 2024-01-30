@@ -93,7 +93,10 @@ public class UIManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.E))
             HideExperienceUI();
         if(Input.GetKeyDown(KeyCode.F))
+        {
+            FeedBackUI.GetComponent<FeedbackManager>().publishSensationData();
             HideFeedBackUI();
+        }
         if(Input.GetKeyDown(KeyCode.M))
             HideManagementUI();
 

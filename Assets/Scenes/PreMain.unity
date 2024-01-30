@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 290293692}
   - component: {fileID: 290293691}
   - component: {fileID: 290293690}
+  - component: {fileID: 290293693}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -153,17 +154,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83cecb4d76a1cd4f81712ae00538518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connection_string: 192.168.1.142:6379
+  connection_string: localhost:6379
   test_message: gameManager Here
   channels:
-  - test
   - encoder_positions
   - sim_encoder_positions
   - caresse
-  - virtual_caresse
   - feedback
   - game_parameters
   - haptic_udp
+  - caresse_haptic
   doneInit: 0
   requiresRedis: 1
 --- !u!114 &290293691
@@ -196,6 +196,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &290293693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290293689}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f0aa8f9344ca9644892c10d99d4a207, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  filePath: a.pos
+  file_caresse_speed: 1
+  caresse_speed_scale: 1
+  frequency: 1000
+  idx: 0
+  Moving: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

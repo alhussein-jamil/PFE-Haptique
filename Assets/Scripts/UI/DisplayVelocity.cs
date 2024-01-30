@@ -1,15 +1,18 @@
 using UnityEngine;
 using UnityEngine.UI; 
 using TMPro;
+using System.Globalization;
+using Franka;
 public class DisplayVelocity : MonoBehaviour
 {
     public GManager gameManager; 
     public TextMeshProUGUI velocityText; 
-
+    public CaresseManager caresseManager;
 
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GManager>();
+
     }
     
     void Update()
@@ -17,19 +20,8 @@ public class DisplayVelocity : MonoBehaviour
         
         if(gameManager != null && velocityText != null)
         {
-            string velocityStr = gameManager.gameParameters["velocite.tactile"];
-
-            
-            if (float.TryParse(velocityStr, out float velocity))
-            {
-              
-                velocityText.text = "Caresse Speed : " + velocity.ToString();
-            }
-            else
-            {
                 
-                velocityText.text = "Conversion Error";
-            }
+                velocityText.text = "Running Experience \n ("+ caresseManager.speedidx.ToString() + ")";
         }
     }
 }

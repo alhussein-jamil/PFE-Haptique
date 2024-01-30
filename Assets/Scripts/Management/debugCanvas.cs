@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Linq;
 
 public class debugCanvas : MonoBehaviour
 {
@@ -21,9 +22,9 @@ public class debugCanvas : MonoBehaviour
     {
         if (type == LogType.Exception)
         {
-            logText.text = logString + "\r\n";
-            // add the exception details to the logText 
-            logText.text += stackTrace + "\r\n";
+            logText.text += "<color=red>" + logString + "</color>\r\n";
+            // add the exception details to the logText but only the beginning of the stack trace
+            logText.text += "<color=yellow>" + stackTrace.Split('\n').First() + "</color>\r\n";
             //Or Append the log to the old one
             //logText.text += logString + "\r\n";
         }

@@ -18,7 +18,8 @@ public class FeedbackManager : MonoBehaviour
         if(!gameManager.GetComponent<RedisConnection>().redis.IsConnected)
             return;
         Debug.Log("Publishing sensation data");
-        string message = "Pleasure : " + pleasureSlider.value + ";Intensity : " + intensitySlider.value;
+        string message = "pleasantness : " + pleasureSlider.value + ";intensity : " + intensitySlider.value;
         gameManager.GetComponent<RedisConnection>().publisher.Publish(gameManager.GetComponent<RedisConnection>().redisChannels["feedback"], message);
     }
+
 }

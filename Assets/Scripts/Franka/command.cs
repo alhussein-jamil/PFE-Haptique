@@ -28,7 +28,7 @@ namespace Franka
         private float speedScale = 1f;
         private int idx;
         private double _speedScale = 1f;
-        private bool simRobotMoving = false;
+        public bool simRobotMoving = false;
         public GameObject[] links;
         // Start is called before the first frame update
         public float updateFrequency = 1000f;
@@ -37,11 +37,13 @@ namespace Franka
         private bool reversed = false;
         public GameObject gameManager;
         private bool calibDataSet = false;
+        public float calibrationSpeed = 0.5f;
         public void CalibrateRobot()
         {
             
+
             //unsubscribe from redis
-            redisConnection.subscriber.UnsubscribeAll();
+            redisConnection.subscriber.UnsubscribeAll(flags: CommandFlags.FireAndForget);
             Debug.Log("Resetting robot");
             CancelInvoke();
             gameManager.GetComponent<GManager>().robotCalibrationData = null;
@@ -51,10 +53,14 @@ namespace Franka
             realRobotMoving = false;
             simRobotMoving = false;
             calibDataSet = false;
+
+
+
             idx = 0;
             _speedScale = 1f;
             lastMessage = new byte[0];
             messages = null;
+
             messageList.Clear();
             Start();
         }
@@ -100,13 +106,15 @@ namespace Franka
             var robotRedisSubscriber = redisConnection.subscriber.Subscribe(robotChannel);
             robotRedisSubscriber.OnMessage(message =>
             {
-                // calculate the norm2 difference of last message and current message ie messageList.Last() and messageList.Last( - 1)
-                var lastState = realRobotMoving;
+                
+                if (calibrationDone)
+                    return;
 
+                // Check Robot is Moving By comparing the last message with the current one
+                var lastState = realRobotMoving;
                 realRobotMoving = !lastMessage.SequenceEqual(new byte[0]) && !lastMessage.SequenceEqual((byte[])message.Message);
                 if (!realRobotMoving)
                     _speedScale = Math.Abs(speedScale);
-
                 if (!lastState && realRobotMoving)
                 {
                     idx = 0;
@@ -128,15 +136,27 @@ namespace Franka
                 }
                 lastMessage = (byte[])message.Message;
 
-            }
+                }
             );
-            var virtualCaresseSubscriber = redisConnection.subscriber.Subscribe(redisConnection.redisChannels["virtual_caresse"]);
-            virtualCaresseSubscriber.OnMessage(message =>
-            {
-                speedScale = (float)Convert.ToDouble(message.Message);
-                Debug.Log("Speed scale: " + speedScale);
-            }
-            );
+            var caresseSubscriber = redisConnection.subscriber.Subscribe(redisConnection.redisChannels["caresse"]);
+                caresseSubscriber.OnMessage(message =>
+                {
+                    if (!calibrationDone){
+
+
+                        calibrationSpeed = (float)Convert.ToDouble(message.Message);
+                        Debug.Log("Received calibration speed: " + calibrationSpeed);
+                    }
+                    else
+                    {
+                        idx = 0;
+                        simRobotMoving = true;
+
+                    }
+
+                }
+            ); 
+
         }
         void updateTargets()
         {
@@ -153,10 +173,9 @@ namespace Franka
                     calibDataSet = true;
                 }
             }
-            if ((int)(idx * _speedScale * 1000 / updateFrequency) < messages.Length && simRobotMoving)
+            if ((int)(idx * _speedScale * 1000.0f / updateFrequency) < messages.Length && simRobotMoving)
             {
                 int messageIdx = (int)(idx * _speedScale * 1000 / updateFrequency);
-
                 double[] commandValues = null;
 
                 if (reversed)
@@ -170,9 +189,9 @@ namespace Franka
                 if (commandValues is null)
                     return;
 
-                for (int idx = 0; idx < commandValues.Length; idx++)
+                for (int id = 0; id < commandValues.Length; id++)
                 {
-                    encoderValues[idx] = commandValues[idx] * 180 / Math.PI;
+                    encoderValues[id] = commandValues[id] * 180 / Math.PI;
                 }
                 idx++;
             }
@@ -190,6 +209,8 @@ namespace Franka
         // Update is called once per frame
         void Update()
         {
+            speedScale = float.Parse(gameManager.GetComponent<GManager>().gameParameters["velocite.visuel"]) / calibrationSpeed;
+
             if (Input.GetKeyDown(KeyCode.C))
                 CalibrateRobot();
             if (redisConnection.redis.IsConnected)

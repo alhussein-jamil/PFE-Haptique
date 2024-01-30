@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parameter Selection</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-qrGJDnlqNqIWspSHbfxDve7J2/LQl+ZDtGu+t/bzQhR24xYnM8K2QxJhZcTlgk2Q0KzSdzZ80DZdaVhvw5ljtA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-qrGJDnlqNqIWspSHbfxDve7J2/LQl+ZDtGu+t/bzQhR24xYnM8K2QxJhZcTlgk2Q0KzSdzZ80DZdaVhvw5ljtA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -18,16 +21,20 @@
             justify-content: flex-start;
             height: 100vh;
         }
-        
+
         .logo-container {
-            width: 100%; /* Utilisez toute la largeur */
+            width: 100%;
+            /* Utilisez toute la largeur */
             display: flex;
-            justify-content: center; /* Centre horizontalement */
-            margin-top: 20px; /* Ajouter de l'espace autour du logo */
+            justify-content: center;
+            /* Centre horizontalement */
+            margin-top: 20px;
+            /* Ajouter de l'espace autour du logo */
         }
 
         .logo-container img {
-            max-width: 10%; /* Augmenter la taille maximale du logo */
+            max-width: 10%;
+            /* Augmenter la taille maximale du logo */
             height: auto;
         }
 
@@ -73,7 +80,8 @@
         #sendToRedisButton {
             background-color: #3498db;
             color: white;
-            padding: 20px; /* Increase the padding for a larger size */
+            padding: 20px;
+            /* Increase the padding for a larger size */
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -85,40 +93,41 @@
         #sendToRedisButton:hover {
             background-color: #2980b9;
         }
+
+        /* New styles for the input section */
+        #inputSection {
+            margin-top: 10px;
+        }
+
+        #participant_id_input {
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Handle form submission using AJAX
-            $('form').submit(function(event) {
-                event.preventDefault();
-                $.ajax({
-                    type: 'POST',
-                    url: '/update_params',
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        console.log(response);
-                        // You can add additional handling if needed
-                    },
-                    error: function(error) {
-                        console.log(error);
-                    }
-                });
-            });
+        $(document).ready(function () {
+            // ... (existing code)
 
-            // Handle button click for sending value to Redis channel "caresse"
-            $('#sendToRedisButton').click(function() {
-                var valueToSend = prompt("Enter the value to send to Redis channel 'caresse':");
-                if (valueToSend !== null) {
+            // Handle participant ID update using AJAX
+            $('#updateParticipantIDButton').click(function () {
+                var newParticipantID = $('#participant_id_input').val();
+                if (newParticipantID.trim() !== '') {
                     $.ajax({
                         type: 'POST',
-                        url: '/send_to_redis',
-                        data: { value: valueToSend },
-                        success: function(response) {
+                        url: '/update_participant_id',
+                        data: { participant_id: newParticipantID },
+                        success: function (response) {
                             console.log(response);
-                            // You can add additional handling if needed
+                            // Update the displayed participant ID on the webpage
+                            $('#displayParticipantID').text(newParticipantID);
+                            // Clear the input field
+                            $('#participant_id_input').val('');
                         },
-                        error: function(error) {
+                        error: function (error) {
                             console.log(error);
                         }
                     });
@@ -127,20 +136,21 @@
         });
     </script>
 </head>
-<body>  
+
+<body>
     <div class="logo-container">
         <img src="https://www.isir.upmc.fr/wp-content/themes/isir/dist/images/logo-color.png" alt="Logo">
     </div>
     <form method="post">
         <!-- Replace this section with your form fields and buttons -->
         {% for param in parameters.keys() %}
-            <label for="{{ param }}">{{ param }}:</label>
-            <select name="{{ param }}" id="{{ param }}">
-                {% for choice in parameters[param] %}
-                    <option value="{{ choice }}" {% if parameters[param] == choice %} selected {% endif %}>{{ choice }}</option>
-                {% endfor %}
-            </select>
-            <br>
+        <label for="{{ param }}">{{ param }}:</label>
+        <select name="{{ param }}" id="{{ param }}">
+            {% for choice in parameters[param] %}
+            <option value="{{ choice }}" {% if current_values[param] == choice %} selected {% endif %}>{{ choice }}</option>
+            {% endfor %}
+        </select>
+        <br>
         {% endfor %}
         <br>
         <button type="submit">Update Parameters</button>
@@ -148,5 +158,14 @@
 
     <!-- Add a button to send a value to Redis channel "caresse" -->
     <button id="sendToRedisButton">Calibration</button>
+
+    <!-- New input section for entering Participant ID -->
+    <div id="inputSection">
+        <label for="participant_id_input">Enter Participant ID:</label>
+        <input type="text" name="participant_id_input" id="participant_id_input" placeholder="Enter Participant ID">
+        <br>
+        <button id="updateParticipantIDButton">Update Participant ID</button>
+    </div>
 </body>
+
 </html>

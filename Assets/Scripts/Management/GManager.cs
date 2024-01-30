@@ -74,8 +74,6 @@ public class GManager : MonoBehaviour
                 (string key, string value) = ParseGameParameters(line);
                 gameParameters[key] = value;
                 Debug.Log("Received game parameter: " + key + " " + value);
-                float scale = float.Parse(gameParameters["velocite.visuel"]) / float.Parse(gameParameters["velocite.tactile"]);
-                redisConnection.publisher.Publish(redisConnection.redisChannels["virtual_caresse"], scale.ToString());
             });
             subscribed = true;
         }

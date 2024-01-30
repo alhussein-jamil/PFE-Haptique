@@ -15,9 +15,8 @@ namespace Franka
         public IDatabase db;
         public ISubscriber subscriber;
         public ISubscriber publisher;
-        public string[] channels = new string[] { "test" , "encoder_positions", "sim_encoder_positions", "caresse" };
+        public string[] channels = new string[] { "encoder_positions", "sim_encoder_positions", "robot_caresse" };
         public Dictionary<string, RedisChannel> redisChannels = new Dictionary<string, RedisChannel>();
-        public RedisChannel testChannel = new RedisChannel("test", RedisChannel.PatternMode.Auto);
 
         public bool doneInit = false;
         public bool requiresRedis = false;
@@ -70,16 +69,6 @@ namespace Franka
                 db = redis.GetDatabase();
                 subscriber = redis.GetSubscriber();
                 publisher = redis.GetSubscriber();
-                //subscribe to test channel
-                subscriber.Subscribe(
-                    testChannel,
-                    (channel, message) =>
-                    {
-                        Debug.Log("Just recieved from test " + (string)message);
-                    }
-                );
-                //publish random message
-                publisher.Publish(testChannel, test_message);
                 foreach (var channel in channels)
                 {
                     redisChannels.Add(channel, new RedisChannel(channel, RedisChannel.PatternMode.Auto));
