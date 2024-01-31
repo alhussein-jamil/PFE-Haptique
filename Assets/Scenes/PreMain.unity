@@ -158,7 +158,6 @@ MonoBehaviour:
   test_message: gameManager Here
   channels:
   - encoder_positions
-  - sim_encoder_positions
   - caresse
   - feedback
   - game_parameters
@@ -203,13 +202,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 290293689}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f0aa8f9344ca9644892c10d99d4a207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filePath: a.pos
-  file_caresse_speed: 1
+  filePath: a_pos_5cm.pos
+  file_caresse_speed: 5
   caresse_speed_scale: 1
   frequency: 1000
   idx: 0

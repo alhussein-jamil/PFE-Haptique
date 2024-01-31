@@ -18,6 +18,29 @@ public class SettingMenu : MonoBehaviour
     {
         gameManager = GameObject.Find("GameManager");
         redisConnection = gameManager.GetComponent<RedisConnection>(); 
+        
+        PublishSceneSide();
+        PublishSceneType();
+    }
+
+
+    private void PublishSceneSide()
+    {
+        if (!redisConnection.redis.IsConnected)
+            return;
+        Debug.Log("Publishing scene side");
+        string message = "Side" + ";" + side;
+        redisConnection.publisher.Publish(redisConnection.redisChannels["game_parameters"], message);
+        SideText.text = side;
+    }
+    private void PublishSceneType()
+    {
+        if (!redisConnection.redis.IsConnected)
+            return;
+        Debug.Log("Publishing scene type");
+        string message = "SceneType" + ";" + device;
+        redisConnection.publisher.Publish(redisConnection.redisChannels["game_parameters"], message);
+        DeviceText.text = device;
     }
 
     public void ToggleSideAndPublish()
@@ -25,22 +48,14 @@ public class SettingMenu : MonoBehaviour
         // Basculer 'side' entre 'left' et 'right'
         side = side == "left" ? "right" : "left";
 
-        // Construire et publier le message
-        string message = "Side" + ";" + side;
-        redisConnection.publisher.Publish(redisConnection.redisChannels["game_parameters"], message);
-        SideText.text = side; // Update the text using TextMeshPro
-        Debug.Log("Published Sceneside: " + side);
+        PublishSceneSide();
     }
     public void ToggleDeviceAndPublish()
     {
         // Basculer 'side' entre 'left' et 'right'
         device = device == "haptic" ? "robot" : "haptic";
 
-        // Construire et publier le message
-        string message = "SceneType" + ";" + device;
-        redisConnection.publisher.Publish(redisConnection.redisChannels["game_parameters"], message);
-        DeviceText.text = device; // Update the text using TextMeshPro
-        Debug.Log("Published device: " + device);
+        PublishSceneType();
     }
     void Update()
     {
