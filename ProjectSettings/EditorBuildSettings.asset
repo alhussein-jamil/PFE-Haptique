@@ -15,13 +15,13 @@ EditorBuildSettings:
     path: Assets/Scenes/TestScenes/CharacterHandTracking.unity
     guid: 883e84cf9d8dfee4aa0255da3abd02c8
   - enabled: 0
-    path: Packages/com.meta.movement/Samples/Scenes/MovementLocomotion.unity
+    path: Assets/Samples/Meta Mouvement/Scenes/MovementLocomotion.unity
     guid: dea6f4ca12e28344ebca139bbdb57ce2
   - enabled: 0
-    path: Packages/com.meta.movement/Samples/Scenes/MovementISDKIntegration.unity
+    path: Assets/Samples/Meta Mouvement/Scenes/MovementISDKIntegration.unity
     guid: 788805bcffb96f84ab907f4730e5759e
   - enabled: 0
-    path: Packages/com.meta.movement/Samples/Scenes/MovementHipPinning.unity
+    path: Assets/Samples/Meta Mouvement/Scenes/MovementHipPinning.unity
     guid: c5846fe596ba70848af39ac75c189ca4
   - enabled: 0
     path: Assets/Samples/Meta XR Interaction SDK OVR Samples/60.0.0/Features/PokeCanvas.unity
@@ -38,9 +38,63 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TestScenes/PokeCanvas.unity
     guid: 68d7fa1d86944a740a9d5a19ee5f44f4
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TestScenes/VRCanvas.unity
     guid: a1039d1f0d16f064fa75fc9a44aae889
+  - enabled: 0
+    path: Assets/Plugins/CW/SpaceGraphicsToolkit/Packs/Basic Pack/Aurora.unity
+    guid: e3307a03b41e2fb4e8c3a2aff3fea467
+  - enabled: 0
+    path: Assets/Samples/Meta XR Interaction SDK OVR Samples/60.0.0/Examples/PokeExamples.unity
+    guid: ada3086bde0ab18459589e22d8d9e182
+  - enabled: 0
+    path: Assets/Scenes/RobotScene_2.unity
+    guid: d5b112f0c483ad747880670c9d2beb77
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/Subscribe.unity
+    guid: 0756e4993e1a48b478a0dcd74dce386e
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/CanvasTestUI.unity
+    guid: db6e0760cc6119248a6d328fb2b09bee
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/test_Connection.unity
+    guid: a9bf5337868597d4d83c8cafed62ac67
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/empty.unity
+    guid: bdf54891f663b9c4bba96bc667327a12
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/TestTable.unity
+    guid: 700828ee64b6593488973e51f27b89ac
+  - enabled: 0
+    path: Assets/Scenes/RobotScene_old.unity
+    guid: c3009b5c9559ff84eaecc23abb7f89c9
+  - enabled: 1
+    path: Assets/Scenes/PreMain.unity
+    guid: a3232bb85a7e7924d96850ab33ec3d29
+  - enabled: 0
+    path: Assets/Scenes/Main Menu old.unity
+    guid: e8487799ab7258440b911fc8ed500063
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: 39b110c24a4282046a60b47700a11f4f
+  - enabled: 1
+    path: Assets/Scenes/RobotScene.unity
+    guid: 25cb2040d02db794daf3deaa07b09ec8
+  - enabled: 0
+    path: Assets/Scenes/main.unity
+    guid: fb0466811f6c64040918d28abde8089e
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/Vibration.unity
+    guid: c02c458e4aae4d141ac2d5223187244b
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/HapticUDPClient.unity
+    guid: b2cd33a440f03da4ba95d30dfd94d178
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/mouv_cs.unity
+    guid: 69124a7dcb1ddc64abd6b2cfa93e817e
+  - enabled: 0
+    path: Assets/Scenes/TestScenes/RScene.unity
+    guid: 9de0f5bc1f8fdc044aa1c88c1430884d
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 75cfe52963119654c991c850ab9e1171, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 7ea61c0a1fa610146acf6864daab9999, type: 2}

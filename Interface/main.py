@@ -1,67 +1,57 @@
-
-import redis
-from flask import Flask, render_template, request
-from threading import Thread
-import pandas as pd
-import datetime  # Import datetime module for timestamp
-import subprocess
 import os
 import csv
+import datetime
+import subprocess
+import pandas as pd
+import redis
+from flask import Flask, render_template, request, jsonify
+from threading import Thread
 import webbrowser
-from flask import jsonify
- 
-#run the c# client using dotnet run
-import os
+# Load configurations from environment variables or set defaults
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+DATA_FOLDER = os.getenv('DATA_FOLDER', './feedback_data')
+C_SHARP_PROJECT_PATH = os.getenv('C_SHARP_PROJECT_PATH', './UDP/')
 
-os.makedirs('./feedback_data', exist_ok=True)
+# Ensure the data directory exists
+os.makedirs(DATA_FOLDER, exist_ok=True)
+
 # Initialize participant_id from the latest saved data
 participant_id = 0
-for filename in os.listdir('./feedback_data'):
+for filename in os.listdir(DATA_FOLDER):
     if filename.endswith(".csv"):
         participant_id = max(participant_id, int(filename.split('_')[2].split('.')[0]))
 
+# Start C# client using subprocess
+subprocess.Popen(["dotnet", "run", REDIS_HOST, "--project", C_SHARP_PROJECT_PATH])
 
-
-# subprocess.Popen(["dotnet", "run", "--project", "./UDP/"])
 app = Flask(__name__)
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 # Read parameter choices from CSV file
 parameter_choices = pd.read_csv('Data_participant_Incongruency.csv', sep=";")
-# Convert numeric values to strings
-parameter_choices = parameter_choices.applymap(str)
-
+parameter_choices = parameter_choices.applymap(str)  # Convert numeric values to strings
 parameter_names = list(parameter_choices.columns)
-selected_params = {param: list(set(parameter_choices[param])) for param in parameter_names}
 
+# Initialize selected parameters and current values
+selected_params = {param: list(set(parameter_choices[param])) for param in parameter_names}
 selected_params['SceneType'] = ['robot', 'haptic']
 selected_params['Side'] = ['left', 'right']
-
-parameter_names.append('SceneType')
-parameter_names.append('Side')
-# Add a dictionary to store current parameter values
 current_values = {param: selected_params[param][0] for param in parameter_names}
 
-# Create a list to store received parameters
-received_params = []
-# Add this route to your Flask app
+# Add additional parameters
+parameter_names.extend(['SceneType', 'Side'])
+
+received_params = []  # List to store received parameters
+
 @app.route('/send_to_redis', methods=['POST'])
 def send_to_redis():
-
     value_to_send = request.form.get('value')
     if value_to_send:
         redis_client.publish('caresse', value_to_send)
         return f"Value '{value_to_send}' sent to Redis channel 'caresse'"
     else:
         return "No value provided to send to Redis channel 'caresse'"
-def update_selected_params(updated_params):
-    global selected_params
-    global current_values
-
-    for param, value in updated_params.items():
-        selected_params[param] = list(set(parameter_choices[param]))  # Reset options
-        current_values[param] = value  # Update current value
-        selected_params[param].insert(0, value)  # Insert the updated value at the beginning
 
 @app.route('/')
 def index():
@@ -69,6 +59,7 @@ def index():
 @app.route('/update_participant_id', methods=['POST'])
 def update_participant_id():
     global participant_id
+    print("update_participant_id , ", request.form.get('participant_id'))
     new_participant_id = request.form.get('participant_id')
     
     if new_participant_id:
@@ -128,6 +119,22 @@ def listen_and_save():
                 # Update the selected parameters
                 update_selected_params(game_params_dict)
 
+def update_selected_params(updated_params):
+    global selected_params
+    global current_values
+
+    for param, value in updated_params.items():
+        # Check if the parameter is in the parameter_choices DataFrame
+        if param in parameter_choices.columns:
+            selected_params[param] = list(set(parameter_choices[param]))  # Reset options from DataFrame
+        else:
+            # Handle manually added parameters like 'SceneType' or 'Side'
+            if param in selected_params:
+                selected_params[param] = [value] + [x for x in selected_params[param] if x != value]
+            else:
+                print(f"Warning: Parameter {param} not found in selected_params.")
+        current_values[param] = value  # Update current value
+
 def save_feedback_to_csv(feedback_params, sec_param):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"feedback_data/participant_id_{str(participant_id)}.csv"
@@ -154,19 +161,14 @@ def save_feedback_to_csv(feedback_params, sec_param):
 
 if __name__ == '__main__':
     pubsub = redis_client.pubsub()
-    pubsub.subscribe("feedback")
-    pubsub.subscribe("game_parameters")
-    from queue import Queue
+    pubsub.subscribe(["feedback", "game_parameters"])
 
-    # ... (previous code)
-
-
-    # Create a new thread for listening and DebugLog saving
-    listen_thread = Thread(target=listen_and_save)
-    listen_thread.daemon = True  # Set the thread as daemon
+    # Create and start a new thread for listening and saving
+    listen_thread = Thread(target=listen_and_save, daemon=True)
     listen_thread.start()
-    
-    # open the web browser to the c# client
+
+    # Open the web browser to the C# client
     webbrowser.open('http://localhost:5000/')
+
     # Run the Flask web server
     app.run(debug=True)

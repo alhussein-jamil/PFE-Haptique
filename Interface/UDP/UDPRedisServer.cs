@@ -1,7 +1,7 @@
 using StackExchange.Redis;
 using System;
 using System.Threading;
-public class UDPRedisClient
+public class UDPRedisServer
 {
     public ConnectionMultiplexer redis;
     public string connection_string = "localhost:6379";
@@ -14,8 +14,9 @@ public class UDPRedisClient
 
     public bool subscribed = false;
 
-    public UDPRedisClient(UDPManagerRedis uDPManagerRedis)
+    public UDPRedisServer(UDPManagerRedis uDPManagerRedis, string ip_adress)
     {
+        this.connection_string = ip_adress + ":6379";
         this.uDPManagerRedis = uDPManagerRedis;
     }
 

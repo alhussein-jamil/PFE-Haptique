@@ -109,21 +109,22 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+
         #updateParticipantIDButton {
             background-color: #3498db;
             color: white;
-            padding: 8px 10px; /* Taille réduite du bouton */
-            margin-left: 10px; /* Espacement entre le champ de texte et le bouton */
-            font-size: 14px; /* Taille de police réduite */
+            padding: 8px 10px;
+            /* Taille réduite du bouton */
+            margin-left: 10px;
+            /* Espacement entre le champ de texte et le bouton */
+            font-size: 14px;
+            /* Taille de police réduite */
             /* (Autres styles restent) */
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
         $(document).ready(function () {
-            // ... (existing code)
-
-            // Handle participant ID update using AJAX
             $('#updateParticipantIDButton').click(function () {
                 var newParticipantID = $('#participant_id_input').val();
                 if (newParticipantID.trim() !== '') {
@@ -132,11 +133,56 @@
                         url: '/update_participant_id',
                         data: { participant_id: newParticipantID },
                         success: function (response) {
-                            console.log(response);
+                            console.log('Participant ID updated:', response);
                             // Update the displayed participant ID on the webpage
                             $('#displayParticipantID').text(newParticipantID);
                             // Clear the input field
                             $('#participant_id_input').val('');
+                            // Add any action you want to perform on success, e.g., showing a success message
+                        },
+                        error: function (error) {
+                            console.log('Error updating participant ID:', error);
+                            // Handle errors, e.g., showing an error message
+                        }
+                    });
+                } else {
+                    // Handle case where participant ID is empty
+                    console.log('No participant ID provided');
+                    // Optionally, display an error message to the user
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Handle form submission using AJAX
+            $('form').submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/update_params',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        console.log(response);
+                        // You can add additional handling if needed
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            // Handle button click for sending value to Redis channel "caresse"
+            $('#sendToRedisButton').click(function () {
+                var valueToSend = prompt("Enter the value to send to Redis channel 'caresse':");
+                if (valueToSend !== null) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/send_to_redis',
+                        data: { value: valueToSend },
+                        success: function (response) {
+                            console.log(response);
+                            // You can add additional handling if needed
                         },
                         error: function (error) {
                             console.log(error);
@@ -163,7 +209,8 @@
         <label for="{{ param }}">{{ param }}:</label>
         <select name="{{ param }}" id="{{ param }}">
             {% for choice in parameters[param] %}
-            <option value="{{ choice }}" {% if current_values[param] == choice %} selected {% endif %}>{{ choice }}</option>
+            <option value="{{ choice }}" {% if current_values[param]==choice %} selected {% endif %}>{{ choice }}
+            </option>
             {% endfor %}
         </select>
         <br>
@@ -171,7 +218,7 @@
         <br>
         <button type="button" onclick="updateParameters()">Update Parameters</button>
     </form>
-    
+
     <script>
         function updateParameters() {
             $.ajax({
@@ -190,7 +237,7 @@
 
     <!-- Add a button to send a value to Redis channel "caresse" -->
     <button id="sendToRedisButton">Calibration</button>
-    
+
 </body>
 
 </html>
