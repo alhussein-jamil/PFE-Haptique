@@ -15,6 +15,8 @@ public class FeedbackManager : MonoBehaviour
 
     public void publishSensationData()
     {
+        if(!gameManager)
+            gameManager = GameObject.Find("GameManager");
         if(!gameManager.GetComponent<RedisConnection>().redis.IsConnected)
             return;
         Debug.Log("Publishing sensation data");

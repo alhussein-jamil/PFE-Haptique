@@ -61,7 +61,7 @@ public class GManager : MonoBehaviour
             UnityEngine.SceneManagement.SceneManager.LoadScene("RobotScene");
         if(Input.GetKeyDown(KeyCode.Q))
             // go to main scene
-            UnityEngine.SceneManagement.SceneManager.LoadScene("main");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
         calibrationDataLength = robotCalibrationData == null ? 0 : robotCalibrationData.Length;
         gameParametersString = DictToString(gameParameters);
         if (!redisConnection.doneInit)

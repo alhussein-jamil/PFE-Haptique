@@ -20,8 +20,9 @@ os.makedirs(DATA_FOLDER, exist_ok=True)
 participant_id = 0
 for filename in os.listdir(DATA_FOLDER):
     if filename.endswith(".csv"):
-        participant_id = max(participant_id, int(filename.split('_')[2].split('.')[0]))
-
+        print(int(filename.split('_')[2].split('.')[0]))
+        participant_id = max(participant_id, int(filename.split('_')[2].split('.')[0]) + 1)
+print(participant_id)
 # Start C# client using subprocess
 subprocess.Popen(["dotnet", "run", REDIS_HOST, "--project", C_SHARP_PROJECT_PATH])
 

@@ -61,7 +61,9 @@ namespace Franka
         {
             redisConnection.subscriber.Subscribe(redisConnection.redisChannels["caresse"], (channel, message) =>
            {
+               idx = 0;
                Moving = false;
+    
                //wait for 1 second
                System.Threading.Thread.Sleep(150);
                string line = message.ToString();
