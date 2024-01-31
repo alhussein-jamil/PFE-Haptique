@@ -122,24 +122,7 @@
     <script>
         $(document).ready(function () {
             // ... (existing code)
-        // Handle button click for sending value to Redis channel "caresse"
-        $('#sendToRedisButton').click(function () {
-            var valueToSend = prompt("Enter the value to send to Redis channel 'caresse':");
-            if (valueToSend !== null) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/send_to_redis',
-                    data: { value: valueToSend },
-                    success: function (response) {
-                        console.log(response);
-                        // You can add additional handling if needed
-                    },
-                    error: function (error) {
-                        console.log(error);
-                    }
-                });
-            }
-        });
+
             // Handle participant ID update using AJAX
             $('#updateParticipantIDButton').click(function () {
                 var newParticipantID = $('#participant_id_input').val();
