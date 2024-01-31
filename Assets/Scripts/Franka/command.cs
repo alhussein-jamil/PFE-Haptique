@@ -13,7 +13,8 @@ namespace Franka
         private ArticulationBody[] articulationChain;
         public double[] encoderValues;
         private RedisConnection redisConnection;
-
+        private Queue<double[]> valueBuffer = new Queue<double[]>();
+        private const int bufferSize = 200;
         // Dropdown menu for different channels
         public RobotType robotDropdown;
         private RedisChannel robotChannel;
@@ -24,10 +25,10 @@ namespace Franka
         public bool subscriptionDone = false;
         private byte[] lastMessage = new byte[0];
         public bool firstMove = false;
-        private bool realRobotMoving = false;
-        private float speedScale = 1f;
-        private int idx;
-        private double _speedScale = 1f;
+        public bool realRobotMoving = false;
+        public float speedScale = 1f;
+        public int idx;
+        public double _speedScale = 1f;
         public bool simRobotMoving = false;
         public GameObject[] links;
         // Start is called before the first frame update
@@ -55,11 +56,10 @@ namespace Franka
             simRobotMoving = false;
             calibDataSet = false;
 
-
+            lastMessage = new byte[0];
 
             idx = 0;
             _speedScale = 1f;
-            lastMessage = new byte[0];
             messages = null;
 
             messageList.Clear();
@@ -101,20 +101,46 @@ namespace Franka
             }
         }
 
+    private bool CheckSignificantMovement()
+    {
+        if (valueBuffer.Count < bufferSize)
+            return false;
 
+        double[] first = valueBuffer.Peek();
+        double[] last = valueBuffer.Last();
+
+        // Replace with your own logic to determine significant movement
+        // For example, comparing the sum of differences across all encoder values
+        double movementThreshold = 0.01; // Define your own threshold
+        double totalDifference = first.Zip(last, (f, l) => Math.Abs(f - l)).Sum();
+        return totalDifference > movementThreshold;
+    }
         void SubscribeToRedis()
         {
             robotChannel = (robotDropdown == RobotType.SimRobot) ? redisConnection.redisChannels["sim_encoder_positions"] : redisConnection.redisChannels["encoder_positions"];
             var robotRedisSubscriber = redisConnection.subscriber.Subscribe(robotChannel);
             robotRedisSubscriber.OnMessage(message =>
             {
-                
-                if (calibrationDone)
+                if(calibrationDone)
+                {
                     return;
-
+                }
+                double[] parsedMessage = RedisConnection.ParseMessage(message);
+                // Update the buffer with the new message
+                if (valueBuffer.Count >= bufferSize)
+                {
+                    valueBuffer.Dequeue();
+                }
+                valueBuffer.Enqueue(parsedMessage);
+                
                 // Check Robot is Moving By comparing the last message with the current one
                 var lastState = realRobotMoving;
-                realRobotMoving = !lastMessage.SequenceEqual(new byte[0]) && !lastMessage.SequenceEqual((byte[])message.Message);
+                           // Check if there is significant movement
+            realRobotMoving = CheckSignificantMovement();
+                // realRobotMoving = !lastMessage.SequenceEqual(new byte[0]) && !lastMessage.SequenceEqual((byte[])message.Message);
+
+                // Check if there is significant movement
+                // realRobotMoving = CheckSignificantMovement();
                 if (!realRobotMoving)
                     _speedScale = Math.Abs(speedScale);
                 if (!lastState && realRobotMoving)
@@ -136,7 +162,8 @@ namespace Franka
                     idx = messages.Length;
 
                 }
-                lastMessage = (byte[])message.Message;
+                                lastMessage = (byte[])message.Message;
+
 
                 }
             );
@@ -144,16 +171,13 @@ namespace Franka
                 caresseSubscriber.OnMessage(message =>
                 {
                     if (!calibrationDone){
-
-
                         calibrationSpeed = (float)Convert.ToDouble(message.Message);
                         Debug.Log("Received calibration speed: " + calibrationSpeed);
                     }
                     else
                     {
                         idx = 0;
-                        simRobotMoving = true;
-
+                        simRobotMoving = true;  
                     }
 
                 }
@@ -211,6 +235,16 @@ namespace Franka
         // Update is called once per frame
         void Update()
         {
+            // Debug.Log("Calibration done: " + calibrationDone);
+            // Debug.Log("Robot moving: " + realRobotMoving);
+            // Debug.Log("Sim robot moving: " + simRobotMoving);
+            // Debug.Log("Calibration speed: " + calibrationSpeed);
+            // Debug.Log("Speed scale: " + speedScale);
+            // Debug.Log("Idx: " + idx);
+            // Debug.Log("Calib data set: " + calibDataSet);
+            // Debug.Log("First move: " + firstMove);
+            // Debug.Log("Reversed: " + reversed);
+            
             if(simRobotMoving && calibrationDone)
                 
             brush.SetActive(true);
