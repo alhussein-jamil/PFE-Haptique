@@ -12,6 +12,9 @@ This project focuses on studying haptic feedback in virtual reality, specificall
 
 ### User Interface
 ![UI](./Images/UI.png)
+
+### Web Interface
+![Web Interface](./Images/WebInterface.png)
 ## Installation
 This project uses redis as a message broker. You can install it on linux from the terminal using the following command:
 ```
