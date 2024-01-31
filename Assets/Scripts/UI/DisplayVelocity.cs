@@ -21,7 +21,7 @@ public class DisplayVelocity : MonoBehaviour
         if(gameManager != null && velocityText != null)
         {
                 
-                velocityText.text = "Running Experience \n ("+ caresseManager.speedidx.ToString() + ")";
+                velocityText.text = "Experience \n ("+ caresseManager.speedidx.ToString() + ")";
         }
     }
 }

@@ -10,6 +10,9 @@ import csv
 import webbrowser
 from flask import jsonify
  
+#run the c# client using dotnet run
+import os
+
 os.makedirs('./feedback_data', exist_ok=True)
 # Initialize participant_id from the latest saved data
 participant_id = 0
@@ -19,10 +22,7 @@ for filename in os.listdir('./feedback_data'):
 
 
 
-#run the c# client using dotnet run
-import os
-
-subprocess.Popen(["dotnet", "run", "--project", "./UDP/"])
+# subprocess.Popen(["dotnet", "run", "--project", "./UDP/"])
 app = Flask(__name__)
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 

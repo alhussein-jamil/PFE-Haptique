@@ -36,6 +36,7 @@ namespace Franka
         public double damping = 10000;
         private bool reversed = false;
         public GameObject gameManager;
+        public GameObject brush;
         private bool calibDataSet = false;
         public float calibrationSpeed = 0.5f;
         public void CalibrateRobot()
@@ -66,6 +67,7 @@ namespace Franka
         }
         void Start()
         {
+            brush.SetActive(false);
             if (gameManager == null)
                 gameManager = GameObject.Find("GameManager");
 
@@ -209,6 +211,11 @@ namespace Franka
         // Update is called once per frame
         void Update()
         {
+            if(simRobotMoving && calibrationDone)
+                
+            brush.SetActive(true);
+            else
+                brush.SetActive(false);
             speedScale = float.Parse(gameManager.GetComponent<GManager>().gameParameters["velocite.visuel"]) / calibrationSpeed;
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -226,3 +233,4 @@ namespace Franka
         }
     }
 }
+
