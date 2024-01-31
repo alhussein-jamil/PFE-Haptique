@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEngine.TestTools;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -24,25 +23,20 @@ public class HapticSource : MonoBehaviour
     [Range(0, 1)]
     [SerializeField]
     private float maxVolume = 1;
-    public e_operator mixingOperator = e_operator.AVERAGE;
+    public e_operator mixingOperator;
     public List<PlayModeParameter> playmodeParameters;
 
     private float[] lastData = { };
     private ulong lastFrameID = 0;
-    public readonly object ppLock = new object();
-    private e_stateSource globalState = e_stateSource.UNSET;
 
     public float Volume { get => volume; set => volume = value; }
     public float MaxVolume { get => maxVolume; set => maxVolume = value; }
-    public e_stateSource State { get => globalState; }
-
     public AbstractSamplesGenerator getHapticClip(int id = 0) {
         if (id < playmodeParameters.Count && id >= 0)
-        { return playmodeParameters[id].getHapticClip(); }
+        { return playmodeParameters[id].hapticClip; }
         else return null;
     }
 
-    //Get Haptic clip parameter
     public PlayModeParameter getHapticClipParameters(int id = 0)
     {
         if (id < playmodeParameters.Count && id >= 0)
@@ -55,7 +49,15 @@ public class HapticSource : MonoBehaviour
     {
         foreach (var pp in playmodeParameters)
         {
-            pp.init();
+            if(pp.hapticClipPrefab != null)
+            {
+                pp.hapticClip = pp.hapticClipPrefab.GetComponent<AbstractSamplesGenerator>();
+                pp.state = e_stateSource.STOP;
+                if (pp.startOnAwake)
+                {
+                    start();
+                }
+            }
         }
         if(playmodeParameters.Count <= 0)
         {
@@ -64,7 +66,7 @@ public class HapticSource : MonoBehaviour
         
     }
 
-    // Update is called once per frame to update timer of clips
+    // Update is called once per frame
     void Update()
     {
         foreach (var pp in playmodeParameters)
@@ -73,84 +75,29 @@ public class HapticSource : MonoBehaviour
         }
     }
 
-    //Add Clip to the source in runtime (Mixer should be carfully choose to avoid non center signal)
-    public void addClip(PlayModeParameter pp)
-    {
-        lock (ppLock)
-        {
-            playmodeParameters.Add(pp);
-        }
-    }
-
-    //Remove one clip from the source in runtime (Mixer should be carfully choose to avoid non center signal)
-    public void removeClip(int id)
-    {
-        if(playmodeParameters.Count < id && id >= 0)
-        {
-            lock (ppLock)
-            {
-                playmodeParameters[id].cleanup(); //remove instantiate clips
-                playmodeParameters.RemoveAt(id);
-            }
-        }
-    }
-
-    //Remove all clips from the source in runtime
-    public void removeClips()
-    {
-        lock (ppLock)
-        {
-            foreach (var pp in playmodeParameters)
-            {
-                pp.cleanup();  //remove instantiate clips
-            }
-            playmodeParameters.Clear();
-        }
-    }
-
-    [ContextMenu("Start Source")]
-    //Start the source
     public void start()
     {
         foreach (var pp in playmodeParameters)
         {
             pp.start();
-            globalState = e_stateSource.STARTED;
         }
     }
-    [ContextMenu("Stop Source")]
-    //Stop the source
     public void stop()
     {
         foreach (var pp in playmodeParameters)
         {
             pp.stop();
-            globalState = e_stateSource.STOP;
         }
     }
-    [ContextMenu("Pause Source")]
-    //pause the source
+
     public void pause()
     {
         foreach (var pp in playmodeParameters)
         {
             pp.pause();
-            globalState = e_stateSource.PAUSE;
         }
     }
 
-    [ContextMenu("Restart Source")]
-    //Restart the source (stop then start)
-    public void restart()
-    {
-        foreach (var pp in playmodeParameters)
-        {
-            pp.restart();
-        }
-    }
-
-    [ContextMenu("Reset Source")]
-    //reset the signal of the source (not changing the state of the source)
     public void reset()
     {
         foreach (var pp in playmodeParameters)
@@ -159,22 +106,19 @@ public class HapticSource : MonoBehaviour
         }
     }
 
-    [ContextMenu("Toggle Play/Pause Source")]
-    //Toggle the source (Play/Pause
+    private void initSamples()
+    {
+        foreach (var pp in playmodeParameters)
+        {
+            pp.hapticClip.initSamples();
+        }
+    }
+
     public void togglePause()
     {
         foreach (var pp in playmodeParameters)
         {
             pp.togglePause();
-        }
-    }
-
-    //Initialize sample of the source
-    private void initSamples()
-    {
-        foreach (var pp in playmodeParameters)
-        {
-            pp.getHapticClip().initSamples();
         }
     }
 
@@ -186,46 +130,42 @@ public class HapticSource : MonoBehaviour
 
     public float[] getSamples(ulong frameID, int size)
     {
+        if (lastData.Length < size)
+        {
+            lastData = lastData.Concat(Enumerable.Repeat(0f, size - lastData.Length).ToArray()).ToArray();
+        }
         if (frameID != lastFrameID)
         {
-            bool allPause = true; ;
-            bool oneStarted = false;
             bool ended = false;
             float[] data;
             lastData = Enumerable.Repeat(0f, size).ToArray();
             int countChannel = 0;
-            lock(ppLock)
+            foreach (var pp in playmodeParameters)
             {
-                foreach (var pp in playmodeParameters)
+                if(pp.state == e_stateSource.STARTED)
                 {
-                    allPause = allPause && pp.State == e_stateSource.PAUSE;
-                    if (pp.State == e_stateSource.STARTED)
-                    {
-                        oneStarted = true;
-                        data = pp.getHapticClip().getNextSamples(size, out ended, pp.playModeType != PlayModeParameter.e_playmode_type.ONCE);
+                    data = pp.hapticClip.getNextSamples(size, out ended, pp.playModeType != PlayModeParameter.e_playmode_type.ONCE);
                     
-                        data = applyVolume(data, pp.volume);
+                    data = applyVolume(data, pp.volume);
 
-                        for (int i = 0; i < size; i++)
-                        {
-                            if (mixingOperator == e_operator.PRODUCT)
-                            {
-                                lastData[i] = lastData[i] * data[i];
-                            }
-                            else
-                            {
-                                lastData[i] = lastData[i] + data[i];
-                            }
-                        }
-                        countChannel++;
-                    }
-                    if (pp.playModeType == PlayModeParameter.e_playmode_type.ONCE && ended)
+                    for (int i = 0; i < size; i++)
                     {
-                        pp.stop();
+                        if (mixingOperator == e_operator.PRODUCT)
+                        {
+                            lastData[i] = lastData[i] * data[i];
+                        }
+                        else
+                        {
+                            lastData[i] = lastData[i] + data[i];
+                        }
                     }
+                    countChannel++;
+                }
+                if (pp.playModeType == PlayModeParameter.e_playmode_type.ONCE && ended)
+                {
+                    pp.state = e_stateSource.STOP;
                 }
             }
-
             if (mixingOperator == e_operator.AVERAGE && countChannel > 1)
             {
                 for (int i = 0; i < size; i++)
@@ -234,12 +174,8 @@ public class HapticSource : MonoBehaviour
                 }
             }
             lastFrameID = frameID;
-            globalState = allPause ? e_stateSource.PAUSE : oneStarted ? e_stateSource.STARTED : e_stateSource.STOP;
         }
-        else if (lastData.Length < size) // complete with 0 if not enough data
-        {
-            lastData = lastData.Concat(Enumerable.Repeat(0f, size - lastData.Length).ToArray()).ToArray();
-        }
+        
         return applyVolume(lastData, Volume, MaxVolume);
     }
 
@@ -256,7 +192,7 @@ public class PlayModeParameter
 {
     [SerializeField]
     public AbstractSamplesGenerator hapticClipPrefab;
-    private AbstractSamplesGenerator hapticClip = null;
+    public AbstractSamplesGenerator hapticClip = null;
     public enum e_playmode_type
     {
         LOOP = 0, ONCE, DURATION
@@ -271,46 +207,10 @@ public class PlayModeParameter
     [Range(0, 1)]
     [SerializeField]
     public float volume = 1;
-    private float currentCountdown = 0;
-    private e_stateSource state = e_stateSource.UNSET;
+    public float currentCountdown = 0;
+    public e_stateSource state = e_stateSource.UNSET;
 
-    public e_stateSource State { get => state; }
-
-    public ref AbstractSamplesGenerator getHapticClip() { return ref hapticClip; }
-
-    public PlayModeParameter(AbstractSamplesGenerator hapticClipPrefab, bool startOnAwake, e_playmode_type playModeType,  float volume, float duration = 1)
-    {
-        this.hapticClipPrefab = hapticClipPrefab;
-        this.startOnAwake = startOnAwake;
-        this.playModeType = playModeType;
-        this.duration = duration;
-        this.volume = volume;
-        init();
-    }
-
-    public void cleanup()
-    {
-        if (hapticClip != null)
-        {
-            state = e_stateSource.UNSET;
-            Object.Destroy(hapticClip.gameObject);
-        }
-    }
-
-    public void init()
-    {
-        if (this.hapticClipPrefab.gameObject.GetComponent<HapticSource>() != null)
-        {
-            Debug.LogWarning("A HapticClip should not be on the same GameObject than the HapticSource", this.hapticClipPrefab.gameObject);
-            return;
-        }
-        this.hapticClip = Object.Instantiate(this.hapticClipPrefab).GetComponent<AbstractSamplesGenerator>();
-        this.state = e_stateSource.STOP;
-        if (this.startOnAwake)
-        {
-            start();
-        }
-    }
+    public AbstractSamplesGenerator getHapticClip() { return hapticClip; }
 
     public void updateTimer()
     {
@@ -359,12 +259,6 @@ public class PlayModeParameter
         {
             initSamples();
         }
-    }
-
-    public void restart()
-    {
-        stop();
-        start();
     }
 
     private void initSamples()

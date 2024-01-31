@@ -33,7 +33,7 @@ public abstract class SingletonBehaviour<T> : MonoBehaviour where T : SingletonB
 	{
 		if ((Instance == null) || (Instance == this))
 		{
-			Instance = (T) this;
+
 			GameObject.DontDestroyOnLoad(gameObject);
 			return true;
 		}

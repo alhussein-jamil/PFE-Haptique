@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameter Selection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-qrGJDnlqNqIWspSHbfxDve7J2/LQl+ZDtGu+t/bzQhR24xYnM8K2QxJhZcTlgk2Q0KzSdzZ80DZdaVhvw5ljtA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+        }
+
+        .logo-container {
+            width: 100%;
+            /* Utilisez toute la largeur */
+            display: flex;
+            justify-content: center;
+            /* Centre horizontalement */
+            margin-top: 20px;
+            /* Ajouter de l'espace autour du logo */
+        }
+
+        .logo-container img {
+            max-width: 10%;
+            /* Augmenter la taille maximale du logo */
+            height: auto;
+        }
+
+        form {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        label {
+            color: #333;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #sendToRedisButton {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            /* Increase the padding for a larger size */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #sendToRedisButton:hover {
+            background-color: #2980b9;
+        }
+
+        /* New styles for the input section */
+        #inputSection {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        #participant_id_input {
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #updateParticipantIDButton {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 10px;
+            /* Taille réduite du bouton */
+            margin-left: 10px;
+            /* Espacement entre le champ de texte et le bouton */
+            font-size: 14px;
+            /* Taille de police réduite */
+            /* (Autres styles restent) */
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#updateParticipantIDButton').click(function () {
+                var newParticipantID = $('#participant_id_input').val();
+                if (newParticipantID.trim() !== '') {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/update_participant_id',
+                        data: { participant_id: newParticipantID },
+                        success: function (response) {
+                            console.log('Participant ID updated:', response);
+                            // Update the displayed participant ID on the webpage
+                            $('#displayParticipantID').text(newParticipantID);
+                            // Clear the input field
+                            $('#participant_id_input').val('');
+                            // Add any action you want to perform on success, e.g., showing a success message
+                        },
+                        error: function (error) {
+                            console.log('Error updating participant ID:', error);
+                            // Handle errors, e.g., showing an error message
+                        }
+                    });
+                } else {
+                    // Handle case where participant ID is empty
+                    console.log('No participant ID provided');
+                    // Optionally, display an error message to the user
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Handle form submission using AJAX
+            $('form').submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '/update_params',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        console.log(response);
+                        // You can add additional handling if needed
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            // Handle button click for sending value to Redis channel "caresse"
+            $('#sendToRedisButton').click(function () {
+                var valueToSend = prompt("Enter the value to send to Redis channel 'caresse':");
+                if (valueToSend !== null) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/send_to_redis',
+                        data: { value: valueToSend },
+                        success: function (response) {
+                            console.log(response);
+                            // You can add additional handling if needed
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="logo-container">
+        <img src="https://www.isir.upmc.fr/wp-content/themes/isir/dist/images/logo-color.png" alt="Logo">
+    </div>
+    <div id="inputSection">
+        <label for="participant_id_input">Enter Participant ID:</label>
+        <input type="text" id="participant_id_input" placeholder="Enter Participant ID">
+        <button id="updateParticipantIDButton">Update</button> <!-- Texte raccourci -->
+    </div>
+    <form method="post" id="parameterForm">
+        <!-- Replace this section with your form fields and buttons -->
+        {% for param in parameters.keys() %}
+        <label for="{{ param }}">{{ param }}:</label>
+        <select name="{{ param }}" id="{{ param }}">
+            {% for choice in parameters[param] %}
+            <option value="{{ choice }}" {% if current_values[param]==choice %} selected {% endif %}>{{ choice }}
+            </option>
+            {% endfor %}
+        </select>
+        <br>
+        {% endfor %}
+        <br>
+        <button type="button" onclick="updateParameters()">Update Parameters</button>
+    </form>
+
+    <script>
+        function updateParameters() {
+            $.ajax({
+                type: 'POST',
+                url: '/update_params',
+                data: $('#parameterForm').serialize(),
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+
+    <!-- Add a button to send a value to Redis channel "caresse" -->
+    <button id="sendToRedisButton">Calibration</button>
+
+</body>
+
+</html>

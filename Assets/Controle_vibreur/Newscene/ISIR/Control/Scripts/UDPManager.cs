@@ -10,8 +10,10 @@ using static DebugLog;
 
 public class UDPManager : SingletonBehaviour<UDPManager>
 {
-    public e_LogLvl debug = e_LogLvl.DEBUG;
+    public const string SFRAME_UDPHEADER_R = "$d";
 
+    public e_LogLvl debug = e_LogLvl.DEBUG;
+	private int correctionTimingUDP = 0;
     // receiving Thread
     Thread receiveThread;
     private bool running = false;
@@ -36,7 +38,7 @@ public class UDPManager : SingletonBehaviour<UDPManager>
 
     void Start()
     {
-        DebugLog.Instance.setDebug(this.GetType().ToString(), debug);
+        // DebugLog.Instance.setDebug(this.GetType().ToString(), debug);
     }
 
     //Use to validate the field
@@ -60,7 +62,50 @@ public class UDPManager : SingletonBehaviour<UDPManager>
         if (running) return; //Start only once
         initConnection();
     }
+    public void OnUDPMarginQueueReceived(object sender, byte[] d)
+    {
+        parseUDPFrame(d);
+    }
 
+	private void parseUDPFrame(byte[] data)
+	{
+         DebugLog.Instance.Log(this.GetType().ToString(), "data : " + Utils.ConvertByteArrayToString(data));
+        if (data.Length == 0) return;
+		int parsingState = 0;
+		byte[] header = Encoding.ASCII.GetBytes(SFRAME_UDPHEADER_R);
+		int i = 0;
+        while (i < data.Length) 
+        {
+			byte b = data[i];
+            switch (parsingState) {
+				case 0: // Header part 1
+					i++;
+                    if (b == header[0]) 
+					{
+						parsingState++;
+                    }
+					break;
+                case 1: // Header part 2
+                    if (b == header[1]) 
+                    {
+                        parsingState++;
+                        i++;
+                    }
+                    else
+					{
+						parsingState = 0;
+                    }
+                    break;
+                case 2: // value 
+                    i++;
+                    int value = Utils.ConvertByteToInt(b);
+					correctionTimingUDP = value-100;
+                     DebugLog.Instance.Log(this.GetType().ToString(), "configuration UPD received : " + correctionTimingUDP.ToString());
+					parsingState = 0;
+                    break;
+            }
+        }
+    }
     private void closeConnetion()
     {
         lock (comLock)

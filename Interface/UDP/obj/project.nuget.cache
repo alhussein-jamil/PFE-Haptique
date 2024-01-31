@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "rVbbdVTCKUycgmgaPnNSNfMZ7Qhw7+n3uonl4eYiMwIjLqdBM3y7eAkDmFgc4u4QUCrr9VV4H6bb3dDlHgf+fw==",
+  "success": true,
+  "projectFilePath": "E:\\PFE-Haptique\\Interface\\UDP\\UDP.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Alhus\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.0\\microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\Alhus\\.nuget\\packages\\pipelines.sockets.unofficial\\2.2.8\\pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
+    "C:\\Users\\Alhus\\.nuget\\packages\\stackexchange.redis\\2.7.17\\stackexchange.redis.2.7.17.nupkg.sha512",
+    "C:\\Users\\Alhus\\.nuget\\packages\\system.io.pipelines\\5.0.1\\system.io.pipelines.5.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

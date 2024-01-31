@@ -110,7 +110,7 @@ public class AudioSamplesGenerator : AbstractSamplesGenerator
                 if (trial_numb >= 1)
                 {
                     brush_speed = float.Parse(trialData[1].Trim()); //reading the brush speed
-                    brush_script.UpdateSpeed(brush_speed);
+                    brush_script.UpdateSpeed_Brush(brush_speed);
                 }
 
 

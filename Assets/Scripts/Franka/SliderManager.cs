@@ -32,7 +32,6 @@ namespace Franka
 
         void PostInit()
         {
-            articulationChain = controller.articulationChain;
 
             for (int idx = 0; idx < positionSliders.Length; idx++)
             {
@@ -56,7 +55,7 @@ namespace Franka
             }
             byte[] bytes = RedisConnection.CoordsToLine(encoderValues).ToArray();
 
-            redisConnection.publisher.Publish(redisConnection.simRobotChannel, bytes);
+            redisConnection.publisher.Publish(redisConnection.redisChannels["sim_encoder_positions"], bytes);
         }
 
         void Update()

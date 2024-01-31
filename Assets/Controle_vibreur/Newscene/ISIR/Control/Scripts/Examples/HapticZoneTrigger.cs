@@ -51,13 +51,14 @@ public class HapticZoneTrigger : MonoBehaviour
         {
             if (other.tag == hapticDeviceTag)
             {
-                Debug.Log(string.Format("Trigger ON ({0}/{1}) by {2}", transform.parent.name, name, other.name));
+                Debug.Log(string.Format("Trigger ON ({0}/{1}) by {2}", transform.name, name, other.name));
                 HapticDevice hd = other.GetComponent<HapticDevice>();
                 if (hd != null) hd.setSource(hapticSource);
             }
         }
     }
 
+    /*
     private void OnTriggerExit(Collider other)
     {
         if (detectElement == e_detectElement.ByHapticDevice)
@@ -80,5 +81,5 @@ public class HapticZoneTrigger : MonoBehaviour
                 other.GetComponent<HapticDevice>().setSource(null);
             }
         }
-    }
+    }*/
 }
