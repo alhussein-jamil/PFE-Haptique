@@ -96,6 +96,9 @@
 
         /* New styles for the input section */
         #inputSection {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-top: 10px;
         }
 
@@ -105,6 +108,14 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
+        }
+        #updateParticipantIDButton {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 10px; /* Taille réduite du bouton */
+            margin-left: 10px; /* Espacement entre le champ de texte et le bouton */
+            font-size: 14px; /* Taille de police réduite */
+            /* (Autres styles restent) */
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -141,6 +152,11 @@
     <div class="logo-container">
         <img src="https://www.isir.upmc.fr/wp-content/themes/isir/dist/images/logo-color.png" alt="Logo">
     </div>
+    <div id="inputSection">
+        <label for="participant_id_input">Enter Participant ID:</label>
+        <input type="text" id="participant_id_input" placeholder="Enter Participant ID">
+        <button id="updateParticipantIDButton">Update</button> <!-- Texte raccourci -->
+    </div>
     <form method="post">
         <!-- Replace this section with your form fields and buttons -->
         {% for param in parameters.keys() %}
@@ -158,14 +174,7 @@
 
     <!-- Add a button to send a value to Redis channel "caresse" -->
     <button id="sendToRedisButton">Calibration</button>
-
-    <!-- New input section for entering Participant ID -->
-    <div id="inputSection">
-        <label for="participant_id_input">Enter Participant ID:</label>
-        <input type="text" name="participant_id_input" id="participant_id_input" placeholder="Enter Participant ID">
-        <br>
-        <button id="updateParticipantIDButton">Update Participant ID</button>
-    </div>
+    
 </body>
 
 </html>
