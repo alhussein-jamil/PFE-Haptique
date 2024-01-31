@@ -157,7 +157,7 @@
         <input type="text" id="participant_id_input" placeholder="Enter Participant ID">
         <button id="updateParticipantIDButton">Update</button> <!-- Texte raccourci -->
     </div>
-    <form method="post">
+    <form method="post" id="parameterForm">
         <!-- Replace this section with your form fields and buttons -->
         {% for param in parameters.keys() %}
         <label for="{{ param }}">{{ param }}:</label>
@@ -169,8 +169,24 @@
         <br>
         {% endfor %}
         <br>
-        <button type="submit">Update Parameters</button>
+        <button type="button" onclick="updateParameters()">Update Parameters</button>
     </form>
+    
+    <script>
+        function updateParameters() {
+            $.ajax({
+                type: 'POST',
+                url: '/update_params',
+                data: $('#parameterForm').serialize(),
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
 
     <!-- Add a button to send a value to Redis channel "caresse" -->
     <button id="sendToRedisButton">Calibration</button>

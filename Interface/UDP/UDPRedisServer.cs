@@ -1,11 +1,14 @@
 using StackExchange.Redis;
-
-public class UDPRedisClient 
+using System;
+using System.Threading;
+public class UDPRedisClient
 {
     public ConnectionMultiplexer redis;
     public string connection_string = "localhost:6379";
     public ISubscriber subscriber;
+    public ISubscriber publisher;   
     string channel = "haptic_udp";
+    public int limit = 10;
     UDPManagerRedis uDPManagerRedis;
 
 
@@ -21,30 +24,17 @@ public class UDPRedisClient
     {
         redis = ConnectionMultiplexer.Connect(connection_string);
         subscriber = redis.GetSubscriber();
+        publisher = redis.GetSubscriber();
         // call update at 60Hz
         float updateRate = 1.0f / 60.0f;
-        float Timer = 0.0f;
-        while (true)
-        {
-            Timer += DateTime.Now.Millisecond / 1000.0f;
-            if (Timer > updateRate)
-            {
-                Timer -= updateRate;
-                Update();
-            }
-        }
+        Timer update_timer = new Timer((e) => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(1.0f / 60.0f * 1000));
+  }
+    Queue<ChannelMessage > udpMarginQueue = new Queue<ChannelMessage >();
 
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(!subscribed && redis.IsConnected)
-        {
-            var x = subscriber.Subscribe(new RedisChannel("haptic_udp", RedisChannel.PatternMode.Auto));
 
-            x.OnMessage(message => {
-                
+    void sendUDPCommands(){
+                ChannelMessage  message = udpMarginQueue.Dequeue();
                 string msg = message.Message.ToString();
 
                 if(msg == "start")
@@ -59,12 +49,32 @@ public class UDPRedisClient
                 }
                 else
                 {
+
                     uDPManagerRedis.SendData((byte[])message.Message);
+                }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(!subscribed && redis.IsConnected)
+        {
+            var x = subscriber.Subscribe(new RedisChannel(channel, RedisChannel.PatternMode.Auto));
+
+            x.OnMessage(message => {
+                udpMarginQueue.Enqueue(message);
+                if (udpMarginQueue.Count > limit)
+                {
+                    udpMarginQueue.Dequeue();
                 }
             });
             
 
             subscribed = true;
+        }
+        if(udpMarginQueue.Count > 0)
+        {
+            sendUDPCommands();
         }
         
     }

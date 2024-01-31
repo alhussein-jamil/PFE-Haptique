@@ -18,10 +18,10 @@ for filename in os.listdir('./feedback_data'):
         participant_id = max(participant_id, int(filename.split('_')[2].split('.')[0]))
 
 
-# open the web browser to the c# client
-webbrowser.open('http://localhost:5000/')
 
 #run the c# client using dotnet run
+import os
+
 subprocess.Popen(["dotnet", "run", "--project", "./UDP/"])
 app = Flask(__name__)
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -115,7 +115,7 @@ def listen_and_save():
 
                 # Create a dictionary with parameter names and their values
                 feedback_params = {'pleasantness': pleasantness_value, 'intensity': intensity_value}
-
+                print(feedback_params)
                 # Save the feedback parameters to a CSV file
                 save_feedback_to_csv(feedback_params, current_values)
 
@@ -165,5 +165,8 @@ if __name__ == '__main__':
     listen_thread = Thread(target=listen_and_save)
     listen_thread.daemon = True  # Set the thread as daemon
     listen_thread.start()
+    
+    # open the web browser to the c# client
+    webbrowser.open('http://localhost:5000/')
     # Run the Flask web server
     app.run(debug=True)
