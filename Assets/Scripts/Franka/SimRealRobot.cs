@@ -23,7 +23,7 @@ namespace Franka
 
         private void Start()
         {
-            gameManager = this.gameObject;
+            gameManager = gameObject;
             if (gameManager == null)
                 gameManager = GameObject.Find("gameManager");
             redisConnection = gameManager.GetComponent<RedisConnection>();

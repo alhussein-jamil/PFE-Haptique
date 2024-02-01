@@ -51,7 +51,7 @@ public class Calibrate : MonoBehaviour
     // Coroutine pour attendre 5 secondes avant de calibrer
     IEnumerator CalibrationRoutine()
     {
-        float remainingTime = 5f;
+        float remainingTime = 10f;
         while (remainingTime > 0f)
         {
 
