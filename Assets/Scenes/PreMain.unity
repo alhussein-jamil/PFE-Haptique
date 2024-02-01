@@ -207,8 +207,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f0aa8f9344ca9644892c10d99d4a207, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filePath: a_pos_5cm.pos
-  file_caresse_speed: 5
+  filePath: a.pos
+  file_caresse_speed: 1
   caresse_speed_scale: 1
   frequency: 1000
   idx: 0

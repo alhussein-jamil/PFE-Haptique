@@ -15,11 +15,11 @@ namespace Franka
         public bool firstMove = false;
         public GameObject brush;
 
-        [SerializeField] private RobotType robotDropdown;
-        [SerializeField] private float speedScale = 1f;
-        [SerializeField] private float updateFrequency = 1000f;
-        [SerializeField] private double stiffness = 100000;
-        [SerializeField] private double damping = 10000;
+        public RobotType robotDropdown;
+        public float speedScale = 1f;  
+        private float updateFrequency = 1000f;
+        private double stiffness = 100000;
+        private double damping = 10000;
 
         private ArticulationBody[] articulationChain;
         private double[] encoderValues;
@@ -81,7 +81,7 @@ namespace Franka
             calibDataSet = false;
 
             idx = 0;
-            _speedScale = 1f;
+            speedScale = 1f;
             messages = null;
 
             messageList.Clear();
@@ -142,6 +142,7 @@ namespace Franka
                 {
                     idx = 0;
                     simRobotMoving = true;
+                    _speedScale = Math.Abs(speedScale);
                 }
             });
         }

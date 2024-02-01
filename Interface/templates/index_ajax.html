@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -122,35 +123,47 @@
             /* (Autres styles restent) */
         }
     </style>
+    <script type="text/javascript" charset="utf-8">
+        // SocketIO event handler for updating parameters in real-time
+        var socket = io.connect('http://' + document.domain + ':' + location.port + '/');
+
+        socket.on('update_parameter', function (msg) {
+            // Update the parameter value in the HTML based on the received WebSocket message
+            document.getElementById(msg.param).value = msg.value;
+        });
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
+
         $(document).ready(function () {
             $('#updateParticipantIDButton').click(function () {
-                var newParticipantID = $('#participant_id_input').val();
-                if (newParticipantID.trim() !== '') {
-                    $.ajax({
-                        type: 'POST',
-                        url: '/update_participant_id',
-                        data: { participant_id: newParticipantID },
-                        success: function (response) {
-                            console.log('Participant ID updated:', response);
-                            // Update the displayed participant ID on the webpage
-                            $('#displayParticipantID').text(newParticipantID);
-                            // Clear the input field
-                            $('#participant_id_input').val('');
-                            // Add any action you want to perform on success, e.g., showing a success message
-                        },
-                        error: function (error) {
-                            console.log('Error updating participant ID:', error);
-                            // Handle errors, e.g., showing an error message
-                        }
-                    });
-                } else {
-                    // Handle case where participant ID is empty
-                    console.log('No participant ID provided');
-                    // Optionally, display an error message to the user
-                }
-            });
+    var newParticipantID = $('#participant_id_input').val();
+    if (newParticipantID.trim() !== '') {
+        $.ajax({
+            type: 'POST',
+            url: '/update_participant_id',
+            data: { participant_id: newParticipantID },
+            success: function (response) {
+                console.log('Participant ID updated:', response);
+                // Update the displayed participant ID on the webpage
+                $('#displayParticipantID').text('Current ID: ' + newParticipantID);
+                // Clear the input field
+                $('#participant_id_input').val('');
+                // Add any action you want to perform on success, e.g., showing a success message
+            },
+            error: function (error) {
+                console.log('Error updating participant ID:', error);
+                // Handle errors, e.g., showing an error message
+            }
+        });
+    } else {
+        // Handle case where participant ID is empty
+        console.log('No participant ID provided');
+        // Optionally, display an error message to the user
+    }
+});
+
         });
     </script>
     <script>
@@ -201,8 +214,10 @@
     <div id="inputSection">
         <label for="participant_id_input">Enter Participant ID:</label>
         <input type="text" id="participant_id_input" placeholder="Enter Participant ID">
-        <button id="updateParticipantIDButton">Update</button> <!-- Texte raccourci -->
+        <button id="updateParticipantIDButton">Update</button>
+        <span id="displayParticipantID"> Current ID: {{ participant_id }}</span>
     </div>
+    
     <form method="post" id="parameterForm">
         <!-- Replace this section with your form fields and buttons -->
         {% for param in parameters.keys() %}

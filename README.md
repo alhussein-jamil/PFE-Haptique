@@ -2,7 +2,11 @@
 
 ## Introduction
 This project focuses on studying haptic feedback in virtual reality, specifically exploring affective touch. The setup includes various tools such as the Emika Franka robotic arm and a range of haptic devices. The project is a Unity virtual world experiment that connects to a robot or haptic devices to simulate haptic feedback. Users are then asked to evaluate the intensity and pleasantness of the feedback. Please note that this project is intended for research purposes.
-
+## Video Tutorial 
+### Launching the web interface and the UDP server
+https://github.com/alhussein-jamil/PFE-Haptique/assets/85727835/5ac18c51-5858-4049-82f6-f2266cb169b8
+### Example Usage 
+https://github.com/alhussein-jamil/PFE-Haptique/assets/85727835/79dfa585-ff9c-4674-978f-58f3c2545a07
 ## Images 
 ### Experiment Setup
 ![Scene Editor](./Images/SceneEditor.png) 
