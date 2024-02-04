@@ -10,7 +10,7 @@ https://github.com/alhussein-jamil/PFE-Haptique/assets/85727835/79dfa585-ff9c-46
 
 ## Tutorial for vibrors
 
-To start the connection of the vibrators, you need to plug them into a USB port of your choice. Then, execute the Python file: demo_win_py3_2023-10-13.
+To start the connection of the vibrators, you need to plug them into a USB port of your choice. Then, execute the Python file: demo_win_py3_2023-10-13, present here :
 
 ![Interface Startup](./Images/interface_python.png) 
 
