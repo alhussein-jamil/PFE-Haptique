@@ -7,6 +7,15 @@ This project focuses on studying haptic feedback in virtual reality, specificall
 https://github.com/alhussein-jamil/PFE-Haptique/assets/85727835/5ac18c51-5858-4049-82f6-f2266cb169b8
 ### Example Usage 
 https://github.com/alhussein-jamil/PFE-Haptique/assets/85727835/79dfa585-ff9c-4674-978f-58f3c2545a07
+
+## Tutorial for vibrors
+
+![Interface Startup](./Images/interface_python.png) 
+
+
+![Interface Python Control of Vibrors](./Images/interface_python_udp.png) 
+
+
 ## Images 
 ### Experiment Setup
 ![Scene Editor](./Images/SceneEditor.png) 
