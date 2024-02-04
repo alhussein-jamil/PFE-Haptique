@@ -9,8 +9,6 @@ public class Brush_Movement : MonoBehaviour{
     private Vector3 Last_vibror; 
     private Vector3 endPoint;
 
-    private Vector3 positionInitiale;
-
     public float duration_of_wave;
     public float height_of_curve;
 
@@ -23,7 +21,6 @@ public class Brush_Movement : MonoBehaviour{
 
     void Start()
     {
-        positionInitiale = transform.position;
     }
 
     private void Update()
@@ -35,7 +32,7 @@ public class Brush_Movement : MonoBehaviour{
 
             float t = timer / duration_of_wave;
             float Offset = height_of_curve - height_of_curve *4*((t-0.5f)*(t-0.5f)) ;
-            transform.position = Vector3.Lerp(startPoint , First_vibror , t) - new Vector3(-Offset, Offset, 0);
+            transform.position = Vector3.Lerp(startPoint , First_vibror , t) + new Vector3(-Offset, Offset, 0);
 
             if (timer >= duration_of_wave){
         
@@ -67,7 +64,7 @@ public class Brush_Movement : MonoBehaviour{
                 
                 float t = timer / duration_of_wave;
                 float Offset = height_of_curve - height_of_curve *4*((t-0.5f)*(t-0.5f)) ;
-                transform.position = Vector3.Lerp(Last_vibror , endPoint , t) - new Vector3(Offset, Offset, 0);
+                transform.position = Vector3.Lerp(Last_vibror , endPoint , t) + new Vector3(Offset, Offset, 0);
 
             if (timer >= duration_of_wave){
         

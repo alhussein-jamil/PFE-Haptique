@@ -139,6 +139,7 @@ public class UDPManager : SingletonBehaviour<UDPManager>
     // Update is called once per frame
     public void SendData(byte[] data)
     {
+        
         lock (comLock)
         {
             if (running)

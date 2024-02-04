@@ -2,13 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Globalization;
 
 namespace Franka{
 
 public class MovementManager : MonoBehaviour
 {
-    
-    CaresseManager Instructs;
+
+    public GameObject GameManager;
+
+private GManager gmanager;
+    public Dictionary<string, string> gameParameters = new Dictionary<string, string>();
+
+    public bool setSource = false;
+    private RedisConnection redisConnection;
+
+    public bool subscriptionDone = false;
 
     public Transform startPoint; 
     public Transform First_vibror; 
@@ -31,45 +40,77 @@ public class MovementManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Instructs = gameObject.GetComponent<CaresseManager>();
+        if (GameManager == null)
+                GameManager = GameObject.Find("GameManager");
+
+        gmanager = GameManager.GetComponent<GManager>();
+
+        gameParameters = gmanager.gameParameters;
+
+        redisConnection = GameManager.GetComponent<RedisConnection>();
+
+        foreach (KeyValuePair<string, string> paire in gameParameters)
+        {
+            string cle = paire.Key;
+            string valeur = paire.Value;
+
+            // Affichez la clé et la valeur dans la console Unity
+            Debug.Log("Clé: " + cle + ", Valeur: " + valeur);
+        }
+
+    }
+
+
+    void SubscribeToRedis()
+        {
+            var virtualCaresseSubscriber = redisConnection.subscriber.Subscribe(redisConnection.redisChannels["caresse"]);
+            virtualCaresseSubscriber.OnMessage(message =>
+            {
+                buttonclicked();
+                Debug.Log("channel reçu");
+            }
+            );
     }
 
 
     public void buttonclicked()
         {
+            setSource = true;
 
-
-            Invoke("NextMouvement", 1);
         }
 
     //
     void NextMouvement()
     {
-
-        if(Instructs.getValue("congruency").Contains("mismatch")){
+ 
+        if(gameParameters["congruency"].Contains("mismatch")){
             mismatch = true;
         }
+
         else{mismatch = false;}
 
-        manager_gen.SetSourceBySpeed( (Instructs.getValue("velocite.tactile")).ToString() , mismatch);
+        manager_gen.SetSourceBySpeed( (gameParameters["velocite.tactile"]).ToString() , mismatch);
 
         startPos = startPoint.position;
         First_vibror_Pos = First_vibror.position;
         Last_vibror_Pos = Last_vibror.position;
         endPos = endPoint.position;
 
-       if(Instructs.getValue("stim.visuel") == "pinceau" ){
-            brush_script.UpdateSpeed_Brush(float.Parse(Instructs.getValue("velocite.visuel")));
+       
+
+       if(gameParameters["stim.visuel"] == "pinceau" ){
+            Debug.Log("lapince");
+            brush_script.UpdateSpeed_Brush(float.Parse(gameParameters["velocite.visuel"], CultureInfo.InvariantCulture));
             brush_script.StartMovement_Brush(startPos,First_vibror_Pos,Last_vibror_Pos,endPos);
        }
 
 
-       if(Instructs.getValue("stim.visuel")  == "fleche" ){
-            arrow_script.UpdateSpeed_Arrow(float.Parse(Instructs.getValue("velocite.visuel")));
+       if(gameParameters["stim.visuel"]  == "fleche" ){
+            arrow_script.UpdateSpeed_Arrow(float.Parse(gameParameters["velocite.visuel"], CultureInfo.InvariantCulture));
             arrow_script.StartMovement_Arrow(startPos,First_vibror_Pos,Last_vibror_Pos,endPos);
        }
 
-       if(Instructs.getValue("congruency")  == "mismatch_incongruent " || Instructs.getValue("congruency")  == "mismatch_congruent"){
+       if(gameParameters["congruency"]  == "mismatch_incongruent " || gameParameters["congruency"]  == "mismatch_congruent"){
             startPos = endPoint.position;
             First_vibror_Pos = Last_vibror.position;
             Last_vibror_Pos = First_vibror.position;
@@ -77,13 +118,35 @@ public class MovementManager : MonoBehaviour
        }
 
         
-        trigger_script.UpdateSpeed_Trigger(float.Parse(Instructs.getValue("velocite.tactile")));
+        Debug.Log("test_trigg");
+
+        trigger_script.UpdateSpeed_Trigger(float.Parse(gameParameters["velocite.tactile"], CultureInfo.InvariantCulture));
         trigger_script.StartMovement_Trigger(startPos,First_vibror_Pos,Last_vibror_Pos,endPos);
         
 
 
     }
 
+
+
+void Update()
+{
+    if (!subscriptionDone   )
+    {
+        SubscribeToRedis();
+        subscriptionDone = true;
+    }
+    if(setSource)
+    {
+        NextMouvement();
+        setSource = false;
+
 }
 }
+
+
+}
+
+}
+
 

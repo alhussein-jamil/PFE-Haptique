@@ -36,7 +36,7 @@ public class Trigger_Movement : MonoBehaviour{
 
             float t = timer / duration_of_wave;
             float Offset = height_of_curve - height_of_curve *4*((t-0.5f)*(t-0.5f)) ;
-            transform.position = Vector3.Lerp(startPoint, First_vibror , t) - new Vector3(-Offset, Offset, 0);
+            transform.position = Vector3.Lerp(startPoint, First_vibror , t) + new Vector3(-Offset, Offset, 0);
 
             if (timer >= duration_of_wave){
         
@@ -66,7 +66,7 @@ public class Trigger_Movement : MonoBehaviour{
                 
                 float t = timer / duration_of_wave;
                 float Offset = height_of_curve - height_of_curve *4*((t-0.5f)*(t-0.5f)) ;
-                transform.position = Vector3.Lerp(Last_vibror , endPoint , t) - new Vector3(Offset, Offset, 0);
+                transform.position = Vector3.Lerp(Last_vibror , endPoint , t) + new Vector3(Offset, Offset, 0);
 
             //when the Trigger is in the correct place turned of the movement and reset the timer 
             if (timer >= duration_of_wave){

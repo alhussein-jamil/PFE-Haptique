@@ -20,7 +20,9 @@ class RedisUDPTunnel
 	{
 
 		redisConnection.publisher.Publish(redisConnection.redisChannels["haptic_udp"], "start");
+Debug.Log("lestart");
 	}
+
 	public void SendData(byte[] d)
 	{
 
@@ -87,7 +89,7 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 
 	public HapticDeviceGrip hapticGripDevice;
 	private PWMBalanceWatcher pwmWatcher;
-
+	public UDPManager uDPManager;
 	//CONST VIB
 	public const string SFRAME_NOSPLIT = "$A";
 	public const string SFRAME_SPLIT = "$B";
@@ -102,7 +104,7 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
 	public const float GAIN_CORRECTION = 0.0005f; //gain to compute the correction of sending frequency
 	public const float GAIN_QUEUE = 0.5f;
 	public const float GAIN_QUEUE_python = 1.0f; //#-> pour convertir en uint8_t
-	public const float MARGE_QUEUE = 64;
+	public const float MARGE_QUEUE = 20;
 
 	//CONST GRIP
 	public const string SFRAME_SPEED = "$V";
@@ -208,10 +210,10 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
         {
 			if (autoStartVibDevice)
 			{
-				// UDPManager.Instance.StartCom();
+				//uDPManager.StartCom();
 				redisUDPTunnel.StartCom();
 
-				// UDPManager.Instance.dataReceived += OnUDPMarginQueueReceived;
+				//uDPManager.dataReceived += OnUDPMarginQueueReceived;
 				redisUDPTunnel.BindHandle();
 			}
         }
@@ -316,10 +318,12 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
                 
                 if (comSystem == e_com_system.UDP)
                 {
-                    //UDPManager.Instance.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
+                    //uDPManager.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
 					redisUDPTunnel.SendData(Encoding.ASCII.GetBytes(SFRAME_UDPHEADER)); //UDP HEADER
-                    //UDPManager.Instance.SendData(data);
+                    //uDPManager.SendData(data);
 					redisUDPTunnel.SendData(data);
+
+
                 }
                 else
                 {
@@ -421,6 +425,7 @@ public class HapticManagerRedis : SingletonBehaviour<HapticManager>
         }
 
         if (updateIdFrame) { frameID++; }
+
 
         return nxtSamples;
     }

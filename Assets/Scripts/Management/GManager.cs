@@ -17,7 +17,7 @@ public class GManager : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
         redisConnection = GetComponent<RedisConnection>();
-        gameParameters["SceneType"] = "robot";
+        gameParameters["SceneType"] = "haptic";
         gameParameters["Side"] = "right";
         //initialize game parameters
         gameParameters["stim.visuel"] = "pinceau";

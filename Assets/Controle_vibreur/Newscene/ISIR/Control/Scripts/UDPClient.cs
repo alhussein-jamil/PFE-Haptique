@@ -35,6 +35,7 @@ public class UDPClient : SingletonBehaviour<UDPClient>
     {
         if(udpClient != null)
         {
+            
             udpClient.Send(data, data.Length);
         }
     }
