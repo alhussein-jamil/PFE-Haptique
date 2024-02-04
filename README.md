@@ -10,8 +10,11 @@ https://github.com/alhussein-jamil/PFE-Haptique/assets/85727835/79dfa585-ff9c-46
 
 ## Tutorial for vibrors
 
+To start the connection of the vibrators, you need to plug them into a USB port of your choice. Then, execute the Python file: demo_win_py3_2023-10-13.
+
 ![Interface Startup](./Images/interface_python.png) 
 
+Next, to configure the connection, you need to press "List Ports" in the control panel. In the terminal, you will be able to see the name of the USB port connected to the vibrator. Enter this name in the text window of the control panel. You can then press "Connect STM. Finally, you need to press "Play UDP," and you won't need to use this interface anymore.
 
 ![Interface Python Control of Vibrors](./Images/interface_python_udp.png) 
 
