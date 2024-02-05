@@ -17,7 +17,7 @@ private GManager gmanager;
     private bool setSource = false;
     private RedisConnection redisConnection;
 
-    public bool subscriptionDone = false;
+    private bool subscriptionDone = false;
 
     public Transform startPoint; 
     public Transform First_vibror; 
