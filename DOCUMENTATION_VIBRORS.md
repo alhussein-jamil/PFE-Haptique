@@ -2,7 +2,7 @@
 
 ## Path
 
-All the objects and codes used to activate the vibrors are in the object : Vibreur :
+All the objects and codes used to activate the vibrors are in the object : Vibreurs :
 
 ![Scene Editor](./Images/Vibror_path.png) 
 
