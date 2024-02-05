@@ -44,8 +44,6 @@ public class Manager_Gen : MonoBehaviour
             speed = speed.Replace(".", "-");
             string SignalName = "signal" + frequency + "_" + i + "_" + speed ;
 
-            Debug.Log(SignalName);
-
             AudioGen AG = listeGen[i].GetComponent<AudioGen>();
             AG.LoadAudioFile(SignalName);
             

@@ -12,10 +12,10 @@ public class Trigger_Detect : MonoBehaviour
         ByTag, ByHapticDevice
     }
 
-    [Tooltip("Test detection only on Object with the tag or look for all HapticDevice element on it")]
+    [Tooltip("Test detection only on Object with the tag")]
     public e_detectElement detectElement = e_detectElement.ByTag;
     [Tooltip("Tag of the HapticDevice GameObject")]
-    public string hapticDeviceTag = "HapticDevice";
+    public string hapticDeviceTag = "Vibrors";
 
     public HapticDevice[] HapticDevices; //predefine the haptic device 
 
@@ -29,8 +29,6 @@ public class Trigger_Detect : MonoBehaviour
         {
             Transform child = transform.GetChild(i);
             
-
-            // Ajouter chaque enfant à la liste
             listetrigs.Add(child.gameObject);
 
         }
@@ -39,32 +37,16 @@ public class Trigger_Detect : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-      
-        if (detectElement == e_detectElement.ByHapticDevice)
+        if (other.tag == hapticDeviceTag)
         {
             for (int i = 0; i < listetrigs.Count; i++)
-            {
-
-                HapticSource hs = listetrigs[i].GetComponent<HapticSource>();
-                HapticDevices[i].setSource( hs );
-                hs.start();
-
-            }
-        }
-        else
         {
-            if (other.tag == hapticDeviceTag)
-            {
-                for (int i = 0; i < listetrigs.Count; i++)
-            {
 
-                HapticSource hs = listetrigs[i].GetComponent<HapticSource>();
-                HapticDevices[i].setSource( hs );
-                hs.start();
-                Debug.Log("test");
+            HapticSource hs = listetrigs[i].GetComponent<HapticSource>();
+            HapticDevices[i].setSource( hs );
+            hs.start();
 
-            }
-            }
+        }
         }
     }
 

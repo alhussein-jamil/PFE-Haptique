@@ -14,7 +14,7 @@ public class MovementManager : MonoBehaviour
 private GManager gmanager;
     public Dictionary<string, string> gameParameters = new Dictionary<string, string>();
 
-    public bool setSource = false;
+    private bool setSource = false;
     private RedisConnection redisConnection;
 
     public bool subscriptionDone = false;
@@ -49,14 +49,6 @@ private GManager gmanager;
 
         redisConnection = GameManager.GetComponent<RedisConnection>();
 
-        foreach (KeyValuePair<string, string> paire in gameParameters)
-        {
-            string cle = paire.Key;
-            string valeur = paire.Value;
-
-            // Affichez la clé et la valeur dans la console Unity
-            Debug.Log("Clé: " + cle + ", Valeur: " + valeur);
-        }
 
     }
 
@@ -67,7 +59,6 @@ private GManager gmanager;
             virtualCaresseSubscriber.OnMessage(message =>
             {
                 buttonclicked();
-                Debug.Log("channel reçu");
             }
             );
     }
@@ -99,7 +90,6 @@ private GManager gmanager;
        
 
        if(gameParameters["stim.visuel"] == "pinceau" ){
-            Debug.Log("lapince");
             brush_script.UpdateSpeed_Brush(float.Parse(gameParameters["velocite.visuel"], CultureInfo.InvariantCulture));
             brush_script.StartMovement_Brush(startPos,First_vibror_Pos,Last_vibror_Pos,endPos);
        }
@@ -116,9 +106,6 @@ private GManager gmanager;
             Last_vibror_Pos = First_vibror.position;
             endPos = startPoint.position;
        }
-
-        
-        Debug.Log("test_trigg");
 
         trigger_script.UpdateSpeed_Trigger(float.Parse(gameParameters["velocite.tactile"], CultureInfo.InvariantCulture));
         trigger_script.StartMovement_Trigger(startPos,First_vibror_Pos,Last_vibror_Pos,endPos);
