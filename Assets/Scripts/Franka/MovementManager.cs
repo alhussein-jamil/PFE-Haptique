@@ -14,10 +14,10 @@ public class MovementManager : MonoBehaviour
 private GManager gmanager;
     public Dictionary<string, string> gameParameters = new Dictionary<string, string>();
 
-    public bool setSource = false;
+    private bool setSource = false;
     private RedisConnection redisConnection;
 
-    public bool subscriptionDone = false;
+    private bool subscriptionDone = false;
 
     public Transform startPoint; 
     public Transform First_vibror; 
